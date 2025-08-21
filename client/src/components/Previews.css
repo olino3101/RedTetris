@@ -1,0 +1,18 @@
+.Preview {
+    position: absolute;
+    top: 0;
+    left: 72.2vw;
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 10px solid rgba(0, 0, 0, 0);
+    border-radius: 10;
+}
+
+
+.Preview-board {
+    display: grid;
+    gap: 2px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    width: 11vw;
+    height: 11vw;
+}
