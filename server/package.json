@@ -1,0 +1,23 @@
+{
+  "name": "redtetris-server",
+  "version": "1.0.0",
+  "description": "just a multiplayer tetris in a spa",
+  "main": "main.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olino3101/RedTetris.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/olino3101/RedTetris/issues"
+  },
+  "homepage": "https://github.com/olino3101/RedTetris#readme",
+  "dependencies": {
+    "node": "^24.6.0",
+    "socket.io": "^4.8.1"
+  }
+}

@@ -1,0 +1,16 @@
+localhost {
+	encode zstd gzip
+
+	handle_path /api/* {
+		reverse_proxy server:3000
+	}
+
+	handle_path /* {
+		reverse_proxy client:5173
+	}
+
+	log {
+		output file /var/www/error.log
+		format json
+	}
+}
