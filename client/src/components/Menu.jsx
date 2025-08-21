@@ -1,10 +1,8 @@
 import "./Menu.css"
 
-const Menu = ({onClick}) =>
+const Menu = ({ onClick }) =>
     <div className="Menu">
-        <button className="Button" onClick={onClick}>
-            Play Tetris
-        </button>
+        <button className="Button" onClick={onClick}>Play Tetris</button>
     </div>
 
 
