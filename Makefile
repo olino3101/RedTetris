@@ -1,3 +1,6 @@
+export DOMAIN_NAME=${shell hostname}
+export HTTPS_PORT=4243
+
 # Running containers attached
 dev:
 	docker compose -f docker-compose.dev.yml up --build

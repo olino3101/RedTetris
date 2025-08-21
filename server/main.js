@@ -8,6 +8,9 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
   : '*';
 
+const DOMAIN_NAME = process.env.DOMAIN_NAME || 'localhost';
+const HTTPS_PORT = process.env.HTTPS_PORT || '4243';
+
 function setCors(res) {
   // Simple permissive CORS for default setup
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -80,7 +83,7 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`Server listening on http://${HOST}:${PORT}`);
+  console.log(`Web page on https://${DOMAIN_NAME}:${HTTPS_PORT}`)
 });
 
 // Graceful shutdown

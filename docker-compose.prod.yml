@@ -8,6 +8,8 @@ services:
       - redtetris-dist:/app/dist
     networks:
       - reverse-proxy
+    environment:
+      - DOMAIN_NAME=$DOMAIN_NAME
 
   server:
     container_name: redtetris-server-prod
@@ -16,6 +18,7 @@ services:
       dockerfile: Dockerfile.prod
     environment:
       - NODE_ENV=production
+      - DOMAIN_NAME=$DOMAIN_NAME
     networks:
       - reverse-proxy
 
@@ -23,16 +26,20 @@ services:
     container_name: redtetris-caddy-prod
     image: caddy:2.10
     depends_on:
-      - client
-      - server
+      client:
+        condition: service_completed_successfully
+      server:
+        condition: service_started
     ports:
-      - "4242:80"
-      - "4243:443"
+      - "8080:80"
+      - "${HTTPS_PORT}:443"
     volumes:
       - ./caddy/Caddyfile.prod:/etc/caddy/Caddyfile:ro  # Using Caddyfile.prod
       - redtetris-dist:/srv/client:ro
     networks:
       - reverse-proxy
+    environment:
+      - DOMAIN_NAME=$DOMAIN_NAME
 
 volumes:
   redtetris-dist:

@@ -1,15 +1,14 @@
+# Build stage
 FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install deps
 COPY package.json package.json
 COPY package-lock.json package-lock.json
-
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # Copy source and build
 COPY . .
-RUN npm run build
+# RUN npm run build
 
-# Build result should be in /app/dist
-CMD ["true"]
+CMD ["npm", "run", "build"]
