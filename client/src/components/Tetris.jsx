@@ -36,7 +36,7 @@ const Tetris = ({ rows, columns, setGameOver }) => {
         setGameOver={setGameOver}
         setPlayer={setPlayer}
       />
-      /</div>
+    </div>
   );
 };
 export default Tetris;

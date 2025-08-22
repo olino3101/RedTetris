@@ -28,6 +28,12 @@ export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
     shape: tetromino.shape
   });
 
+  if (player.collided || player.isFastDropping) {
+    resetPlayer();
+  }
+
+
+
   return {
     rows,
     size: { ...board.size }
@@ -56,7 +62,6 @@ export const hasCollision = ({ board, position, shape }) => {
 };
 
 export const isWithinBoard = ({ board, position, shape }) => {
-  console.log("HERE");
   for (let y = 0; y < shape.length; y++) {
     const row = y + position.row;
 
