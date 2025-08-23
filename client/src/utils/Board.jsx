@@ -1,5 +1,6 @@
 import { defaultCell } from "./Cells";
 import { transferToBoard } from "./Tetrominoes";
+import { movePlayer } from "./PlayerController";
 
 export const buildBoard = ({ rows, columns }) => {
   const builtRows = Array.from({ length: rows }, () =>
@@ -12,6 +13,25 @@ export const buildBoard = ({ rows, columns }) => {
   };
 };
 
+const findDropPosition = ({ board, position, shape }) => {
+  let max = board.size.rows - position.row + 1;
+  let row = 0;
+
+  for (let i = 0; i < max; i++) {
+    const delta = { row: i, column: 0 };
+    const result = movePlayer({ delta, position, shape, board });
+    const { collided } = result;
+
+    if (collided) {
+      break;
+    }
+
+    row = position.row + i;
+  }
+  console.log("ROW\n\n", row);
+  return { ...position, row };
+}
+
 
 export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
   const { tetromino, position } = player;
@@ -20,19 +40,52 @@ export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
     row.map((cell) => (cell.occupied ? cell : { ...defaultCell }))
   );
 
-  rows = transferToBoard({
-    className: tetromino.className,
-    isOccupied: player.collided,
+  const dropPosition = findDropPosition({
+    board,
     position,
+    shape: tetromino.shape
+  });
+
+  const className = `${tetromino.className} 
+    ${player.isFastDropping ? "" : "ghost"
+    }`;
+  rows = transferToBoard({
+    className,
+    isOccupied: player.isFastDropping,
+    position: dropPosition,
     rows,
     shape: tetromino.shape
   });
 
+
+  if (!player.isFastDropping) {
+    rows = transferToBoard({
+      className: tetromino.className,
+      isOccupied: player.collided,
+      position,
+      rows,
+      shape: tetromino.shape
+    });
+  }
+
+  const blankRow = rows[0].map((_) => ({ ...defaultCell }));
+  let linesCleared = 0;
+  rows = rows.reduce((acc, row) => {
+    if (row.every((column) => column.occupied)) {
+      linesCleared++;
+      acc.unshift({ ...blankRow });
+    } else {
+      acc.push(row);
+    }
+    return acc;
+  }, []);
+
+  if (linesCleared > 0) {
+    addLinesCleared(linesCleared);
+  }
   if (player.collided || player.isFastDropping) {
     resetPlayer();
   }
-
-
 
   return {
     rows,
@@ -41,23 +94,31 @@ export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
 };
 
 export const hasCollision = ({ board, position, shape }) => {
+  console.log(board, shape, "\n\n");
+  debugger
   for (let y = 0; y < shape.length; y++) {
     const row = y + position.row;
 
     for (let x = 0; x < shape[y].length; x++) {
-      if (shape[y][x]) {
+      if (shape[y][x] === 1) {
         const column = x + position.column;
+        // console.log(board);
 
+        console.log("row", row, "column", column);
         if (
+
           board.rows[row] &&
           board.rows[row][column] &&
           board.rows[row][column].occupied
+
         ) {
           return true;
         }
       }
     }
+    console.log("\n");
   }
+  console.log(board);
   return false;
 };
 

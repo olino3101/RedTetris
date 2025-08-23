@@ -32,6 +32,9 @@ export const movePlayer = ({ delta, position, shape, board }) => {
         column: position.column + delta.column
     };
 
+    // console.log(desiredNextPosition.row, "desired next posiiton");
+
+
     const collided = hasCollision({
         board,
         position: desiredNextPosition,
@@ -44,7 +47,8 @@ export const movePlayer = ({ delta, position, shape, board }) => {
         shape
     });
 
-    const preventMove = !isOnBoard || (!isOnBoard && collided);
+    const preventMove = !isOnBoard || (isOnBoard && collided);
+    console.log(preventMove);
     const nextPosition = preventMove ? position : desiredNextPosition;
 
     const isMovingDown = delta.row > 0;
