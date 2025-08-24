@@ -8,7 +8,6 @@ const Board = ({ board }) => {
     gridTemplateColumns: `repeat(${board.size.columns}, 1fr)`,
   };
   console.log(board);
-  debugger
   return (
     <div className="Board" style={boardStyles}>
       {board.rows.map((row, y) =>

@@ -1,4 +1,4 @@
-import { defaultCell, indestructableCell } from "./Cells";
+import { defaultCell, indestructibleCell } from "./Cells";
 import { transferToBoard } from "./Tetrominoes";
 import { movePlayer } from "./PlayerController";
 
@@ -76,7 +76,7 @@ export const nextBoard = ({
   const blankRow = rows[0].map((_) => ({ ...defaultCell }));
   let linesCleared = 0;
   rows = rows.reduce((acc, row) => {
-    if (row.every((column) => column.occupied && row[0].className != "Indestructable")) {
+    if (row.every((column) => column.occupied && row[0].className != "indestructible")) {
       linesCleared++;
       acc.unshift([...blankRow]);
     } else {
@@ -92,29 +92,30 @@ export const nextBoard = ({
     resetPlayer();
   }
 
+  const indestructibleLine = rows[0].map((_) => ({ ...indestructibleCell }));
+  const reverseRows = [...rows].reverse();
 
-  // get the number of existing indestrucable line
-
-  // if the number is of howmany its supppose to be then add them up
-  const indestructibleLine = rows[0].map((_) => ({ ...indestructableCell }));
-  const amountIndestructibleLine = rows.reduce((counter, row) => {
-    if (row[0].className == "Indestructable")
-      counter += 1;
-    return counter;
-  }, {});
-
-  rows = rows.reduce((acc, row) => {
-    if (amountIndestructibleLine < addIndestructibleLines)
-      acc.push(indestructibleLine);
-    else
-      acc.push(row);
-    return acc;
-  }, []);
+  rows = reverseRows.reduce(({ acc, count }, row) => {
+    if (count < addIndestructibleLines) {
+      return {
+        acc: [...acc, [...indestructibleLine]],
+        count: count + 1,
+      };
+    }
+    return {
+      acc: [...acc, [...row]],
+      count,
+    };
+  },
+    { acc: [], count: rows.filter(row => row[0].className === "indestructible").length }
+  ).acc.reverse()
 
   return {
     rows,
     size: { ...board.size }
   };
+
+
 };
 
 export const hasCollision = ({ board, position, shape }) => {

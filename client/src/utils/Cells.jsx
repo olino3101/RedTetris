@@ -3,7 +3,7 @@ export const defaultCell = {
     className: ""
 }
 
-export const indestructableCell = {
+export const indestructibleCell = {
     occupied: true,
-    className: "Indestructable"
+    className: "indestructible"
 }

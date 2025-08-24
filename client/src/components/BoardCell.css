@@ -4,6 +4,11 @@
     position: relative;
 }
 
+.indestructible {
+    background-color: rgba(200, 200, 200, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
 .tetromino {
     border-top: 3px solid rgba(255, 255, 255, 0.1);
     border-left: 3px solid rgba(255, 255, 255, 0.1);
