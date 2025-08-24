@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 
-const defaultDropTime = 1000;
+const defaultDropTime = 200;
 const minimumDropTime = 100;
 const speedIncrement = 50;
 

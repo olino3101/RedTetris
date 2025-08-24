@@ -6,7 +6,8 @@ export const useBoard = ({
   columns,
   player,
   resetPlayer,
-  addLinesCleared
+  addLinesCleared,
+  addIndestructibleLines
 }) => {
   const [board, setBoard] = useState(buildBoard({ rows, columns }));
 
@@ -16,10 +17,11 @@ export const useBoard = ({
         board: previousBoard,
         player,
         resetPlayer,
-        addLinesCleared
+        addLinesCleared,
+        addIndestructibleLines
       })
     );
   }, [player, resetPlayer, addLinesCleared]);
 
-  return [board]
+  return [board];
 };

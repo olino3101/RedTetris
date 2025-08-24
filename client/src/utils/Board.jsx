@@ -1,4 +1,4 @@
-import { defaultCell } from "./Cells";
+import { defaultCell, indestructableCell } from "./Cells";
 import { transferToBoard } from "./Tetrominoes";
 import { movePlayer } from "./PlayerController";
 
@@ -6,7 +6,6 @@ export const buildBoard = ({ rows, columns }) => {
   const builtRows = Array.from({ length: rows }, () =>
     Array.from({ length: columns }, () => ({ ...defaultCell }))
   );
-
   return {
     rows: builtRows,
     size: { rows, columns }
@@ -28,12 +27,17 @@ const findDropPosition = ({ board, position, shape }) => {
 
     row = position.row + i;
   }
-  console.log("ROW\n\n", row);
   return { ...position, row };
 }
 
 
-export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
+export const nextBoard = ({
+  board,
+  player,
+  resetPlayer,
+  addLinesCleared,
+  addIndestructibleLines
+}) => {
   const { tetromino, position } = player;
 
   let rows = board.rows.map((row) =>
@@ -49,6 +53,7 @@ export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
   const className = `${tetromino.className} 
     ${player.isFastDropping ? "" : "ghost"
     }`;
+
   rows = transferToBoard({
     className,
     isOccupied: player.isFastDropping,
@@ -71,9 +76,9 @@ export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
   const blankRow = rows[0].map((_) => ({ ...defaultCell }));
   let linesCleared = 0;
   rows = rows.reduce((acc, row) => {
-    if (row.every((column) => column.occupied)) {
+    if (row.every((column) => column.occupied && row[0].className != "Indestructable")) {
       linesCleared++;
-      acc.unshift({ ...blankRow });
+      acc.unshift([...blankRow]);
     } else {
       acc.push(row);
     }
@@ -87,6 +92,25 @@ export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
     resetPlayer();
   }
 
+
+  // get the number of existing indestrucable line
+
+  // if the number is of howmany its supppose to be then add them up
+  const indestructibleLine = rows[0].map((_) => ({ ...indestructableCell }));
+  const amountIndestructibleLine = rows.reduce((counter, row) => {
+    if (row[0].className == "Indestructable")
+      counter += 1;
+    return counter;
+  }, {});
+
+  rows = rows.reduce((acc, row) => {
+    if (amountIndestructibleLine < addIndestructibleLines)
+      acc.push(indestructibleLine);
+    else
+      acc.push(row);
+    return acc;
+  }, []);
+
   return {
     rows,
     size: { ...board.size }
@@ -94,17 +118,13 @@ export const nextBoard = ({ board, player, resetPlayer, addLinesCleared }) => {
 };
 
 export const hasCollision = ({ board, position, shape }) => {
-  console.log(board, shape, "\n\n");
-  debugger
   for (let y = 0; y < shape.length; y++) {
     const row = y + position.row;
 
     for (let x = 0; x < shape[y].length; x++) {
       if (shape[y][x] === 1) {
         const column = x + position.column;
-        // console.log(board);
 
-        console.log("row", row, "column", column);
         if (
 
           board.rows[row] &&
@@ -116,9 +136,7 @@ export const hasCollision = ({ board, position, shape }) => {
         }
       }
     }
-    console.log("\n");
   }
-  console.log(board);
   return false;
 };
 
@@ -137,3 +155,5 @@ export const isWithinBoard = ({ board, position, shape }) => {
   }
   return true;
 }
+
+// z z j o  // o j z

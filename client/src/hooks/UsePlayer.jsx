@@ -13,7 +13,6 @@ const buildPlayer = (previous) => {
             .fill(0)
             .map((_) => randomTetromino());
     }
-
     return {
         collided: false,
         isFastDropping: false,
@@ -24,11 +23,11 @@ const buildPlayer = (previous) => {
 };
 
 export const usePlayer = () => {
+
     const [player, setPlayer] = useState(buildPlayer());
 
     const resetPlayer = useCallback(() => {
         setPlayer((prev) => buildPlayer(prev));
     }, []);
-
     return [player, setPlayer, resetPlayer];
 }

@@ -1,0 +1,5 @@
+.Board {
+    border: 2px solid black;
+    /* thickness and color */
+    border-radius: 4px;
+}

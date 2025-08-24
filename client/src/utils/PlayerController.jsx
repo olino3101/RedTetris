@@ -32,7 +32,6 @@ export const movePlayer = ({ delta, position, shape, board }) => {
         column: position.column + delta.column
     };
 
-    // console.log(desiredNextPosition.row, "desired next posiiton");
 
 
     const collided = hasCollision({
@@ -48,7 +47,6 @@ export const movePlayer = ({ delta, position, shape, board }) => {
     });
 
     const preventMove = !isOnBoard || (isOnBoard && collided);
-    console.log(preventMove);
     const nextPosition = preventMove ? position : desiredNextPosition;
 
     const isMovingDown = delta.row > 0;
@@ -105,7 +103,6 @@ export const playerController = ({
     setGameOver
 }) => {
 
-    console.log(action);
     if (!action) return;
 
     if (action === Action.Rotate) {
