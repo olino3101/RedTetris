@@ -8,7 +8,7 @@ import GameController from "./GameController";
 import { useBoard } from "/src/hooks/UseBoard";
 import { useGameStats } from "/src/hooks/UseGameStats";
 import { usePlayer } from "/src/hooks/UsePlayer";
-import { useServerData } from "/src/hooks/UseServerData"
+import { useServerData } from "/src/hooks/UseServer"
 
 const Tetris = ({ rows, columns, setGameOver }) => {
   const [gameStats, addLinesCleared] = useGameStats();

@@ -1,6 +1,8 @@
 import { defaultCell, indestructibleCell } from "./Cells";
 import { transferToBoard } from "./Tetrominoes";
 import { movePlayer } from "./PlayerController";
+import { punishOther } from '/src/hooks/UseServer';
+
 
 export const buildBoard = ({ rows, columns }) => {
   const builtRows = Array.from({ length: rows }, () =>
@@ -73,49 +75,27 @@ export const nextBoard = ({
     });
   }
 
-  const blankRow = rows[0].map((_) => ({ ...defaultCell }));
-  let linesCleared = 0;
-  rows = rows.reduce((acc, row) => {
-    if (row.every((column) => column.occupied && row[0].className != "indestructible")) {
-      linesCleared++;
-      acc.unshift([...blankRow]);
-    } else {
-      acc.push(row);
-    }
-    return acc;
-  }, []);
+  // clear the lines that are full
+  const { clearedRows, linesCleared } = clearLines(rows);
 
   if (linesCleared > 0) {
     addLinesCleared(linesCleared);
   }
+  const linesToPunish = Math.round(linesCleared / 2);
+  // punish other is when you delete more then 2 lines the other receive +1 lines penalty
+  if (linesToPunish > 0)
+    punishOther(linesToPunish);
   if (player.collided || player.isFastDropping) {
     resetPlayer();
   }
 
-  const indestructibleLine = rows[0].map((_) => ({ ...indestructibleCell }));
-  const reverseRows = [...rows].reverse();
-
-  rows = reverseRows.reduce(({ acc, count }, row) => {
-    if (count < addIndestructibleLines) {
-      return {
-        acc: [...acc, [...indestructibleLine]],
-        count: count + 1,
-      };
-    }
-    return {
-      acc: [...acc, [...row]],
-      count,
-    };
-  },
-    { acc: [], count: rows.filter(row => row[0].className === "indestructible").length }
-  ).acc.reverse()
+  // add the rows that are indestructable
+  const withIndestrucableRows = indestructibleLines(clearedRows, addIndestructibleLines);
 
   return {
-    rows,
+    rows: withIndestrucableRows,
     size: { ...board.size }
   };
-
-
 };
 
 export const hasCollision = ({ board, position, shape }) => {
@@ -157,4 +137,46 @@ export const isWithinBoard = ({ board, position, shape }) => {
   return true;
 }
 
-// z z j o  // o j z
+const clearLines = (rows) => {
+  const blankRow = rows[0].map((_) => ({ ...defaultCell }));
+  const { acc, linesCleared } = [...rows].reduce(({ acc, linesCleared }, row) => {
+    if (row.every((column) => column.occupied && row[0].className != "indestructible")) {
+      return {
+        acc: [...acc],
+        linesCleared: linesCleared + 1,
+      };
+    } else {
+      return {
+        acc: [...acc, [...row]],
+        linesCleared,
+      };
+    }
+  }, { acc: [], linesCleared: 0 });
+
+  const BlankRows = Array(linesCleared).fill(blankRow);
+  const clearedRows = linesCleared > 0 ? [...BlankRows, ...acc] : [...acc];
+
+  return { clearedRows, linesCleared };
+}
+
+const indestructibleLines = (rows, addIndestructibleLines) => {
+  const indestructibleLine = rows[0].map((_) => ({ ...indestructibleCell }));
+  const reverseRows = [...rows].reverse();
+  const newRows = reverseRows.reduce(({ acc, count }, row) => {
+    if (count < addIndestructibleLines) {
+      return {
+        acc: [...acc, [...indestructibleLine]],
+        count: count + 1,
+      };
+    }
+    return {
+      acc: [...acc, [...row]],
+      count,
+    };
+  },
+    { acc: [], count: rows.filter(row => row[0].className === "indestructible").length }
+
+  ).acc.reverse();
+
+  return newRows;
+}
