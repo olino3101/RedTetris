@@ -1,7 +1,7 @@
 import { defaultCell, indestructibleCell } from "./Cells";
 import { transferToBoard } from "./Tetrominoes";
 import { movePlayer } from "./PlayerController";
-import { punishOther } from '/src/hooks/UseServer';
+import { punishOther } from '/src/utils/SendServer';
 
 
 export const buildBoard = ({ rows, columns }) => {

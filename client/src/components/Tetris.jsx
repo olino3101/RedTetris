@@ -2,7 +2,7 @@ import "./Tetris.css";
 
 import Board from "/src/components/Board";
 import GameStats from "/src/components/GameStats";
-// import Previews from "/src/components/Previews";
+import Spectrums from "/src/components/Spectrums";
 import GameController from "./GameController";
 
 import { useBoard } from "/src/hooks/UseBoard";
@@ -13,7 +13,7 @@ import { useServerData } from "/src/hooks/UseServer"
 const Tetris = ({ rows, columns, setGameOver }) => {
   const [gameStats, addLinesCleared] = useGameStats();
   const [player, setPlayer, resetPlayer] = usePlayer();
-  const [addIndestructibleLines] = useServerData();
+  const [addIndestructibleLines, players] = useServerData();
   // debugger;
 
   const [board, setBoard] = useBoard(
@@ -32,7 +32,7 @@ const Tetris = ({ rows, columns, setGameOver }) => {
     <div className="Tetris">
       <Board board={board} />
       <GameStats gameStats={gameStats} />
-      {/* <Previews tetrominoes={player.tetrominoes} /> */}
+      <Spectrums players={players} />
       <GameController
         board={board}
         gameStats={gameStats}
