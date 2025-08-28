@@ -11,6 +11,6 @@ COPY package-lock.json package-lock.json
 
 RUN npm install
 
-CMD ["sh", "-c", "node --watch main.js"]
+CMD ["sh", "-c", "node --watch src/main.js"]
 
 

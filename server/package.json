@@ -2,7 +2,7 @@
   "name": "redtetris-server",
   "version": "1.0.0",
   "description": "just a multiplayer tetris in a spa",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "test": "test"
   },

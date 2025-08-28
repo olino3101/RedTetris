@@ -1,4 +1,5 @@
 export DOMAIN_NAME=${shell hostname}
+# export DOMAIN_NAME=localhost
 export HTTPS_PORT=4243
 
 # Running containers attached
