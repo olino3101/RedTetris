@@ -26,8 +26,6 @@ const Tetris = ({ rows, columns, setGameOver }) => {
       addIndestructibleLines
     });
 
-  // debugger;
-
   return (
     <div className="Tetris">
       <Board board={board} />
