@@ -91,42 +91,24 @@ export const nextBoard = ({
 };
 
 export const hasCollision = ({ board, position, shape }) => {
-  for (let y = 0; y < shape.length; y++) {
-    const row = y + position.row;
-
-    for (let x = 0; x < shape[y].length; x++) {
-      if (shape[y][x] === 1) {
-        const column = x + position.column;
-
-        if (
-
-          board.rows[row] &&
-          board.rows[row][column] &&
-          board.rows[row][column].occupied
-
-        ) {
-          return true;
-        }
+  return !shape.every((row, y) =>
+    row.every((cell, x) => {
+      if (shape[y][x] !== 1) {
+        return true;
       }
-    }
-  }
-  return false;
+      return !(board?.rows[position.row + y]?.[position.column + x])?.occupied;
+    })
+  );
 };
 
 export const isWithinBoard = ({ board, position, shape }) => {
-  for (let y = 0; y < shape.length; y++) {
-    const row = y + position.row;
-
-    for (let x = 0; x < shape[y].length; x++) {
-      if (shape[y][x]) {
-        const column = x + position.column;
-        const isValidPosition = board.rows[row] && board.rows[row][column];
-
-        if (!isValidPosition) return false;
-      }
+  return shape.every((row, y) =>
+    row.every((cell, x) => {
+      if (!cell) return true;
+      return !!(board.rows[position.row + y]?.[position.column + x]);
     }
-  }
-  return true;
+    )
+  );
 }
 
 const clearLines = (rows) => {
