@@ -42,7 +42,7 @@ export const nextBoard = ({
 }) => {
   const { tetromino, position } = player;
 
-  let rows = board.rows.map((row) =>
+  const updateOccupiedRows = board.rows.map((row) =>
     row.map((cell) => (cell.occupied ? cell : { ...defaultCell }))
   );
 
@@ -56,27 +56,19 @@ export const nextBoard = ({
     ${player.isFastDropping ? "" : "ghost"
     }`;
 
-  rows = transferToBoard({
+  // update tetromino ghost
+  const updateTetrominoRows = updateGhostAndTetromino({
     className,
-    isOccupied: player.isFastDropping,
-    position: dropPosition,
-    rows,
-    shape: tetromino.shape
+    player,
+    dropPosition,
+    rows: updateOccupiedRows,
+    tetromino,
+    position
   });
 
 
-  if (!player.isFastDropping) {
-    rows = transferToBoard({
-      className: tetromino.className,
-      isOccupied: player.collided,
-      position,
-      rows,
-      shape: tetromino.shape
-    });
-  }
-
   // clear the lines that are full
-  const { clearedRows, linesCleared } = clearLines(rows);
+  const { clearedRows, linesCleared } = clearLines(updateTetrominoRows);
 
   if (linesCleared > 0) {
     addLinesCleared(linesCleared);
@@ -179,4 +171,36 @@ const indestructibleLines = (rows, addIndestructibleLines) => {
   ).acc.reverse();
 
   return newRows;
+}
+
+
+const updateGhostAndTetromino = (
+  { className,
+    player,
+    dropPosition,
+    rows,
+    tetromino,
+    position
+  }) => {
+  console.log(className);
+  console.log(player, rows);
+  const updateGhost = transferToBoard({
+    className,
+    isOccupied: player.isFastDropping,
+    position: dropPosition,
+    rows,
+    shape: tetromino.shape
+  });
+
+  if (!player.isFastDropping) {
+    const updateTetrominoRows = transferToBoard({
+      className: tetromino.className,
+      isOccupied: player.collided,
+      position,
+      rows: updateGhost,
+      shape: tetromino.shape
+    });
+    return updateTetrominoRows;
+  }
+  return updateGhost;
 }

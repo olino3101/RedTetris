@@ -15,9 +15,6 @@ function App() {
           <Route path="*" element={<div>NOT FOUND</div>} />
         </Routes>
       </Router>
-
-
-
     </div>
   );
 }

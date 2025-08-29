@@ -10,7 +10,7 @@ export const useUserData = ({ room, name }) => {
         // connection.connect();
         setInterval(() => {
             setIsConnected(true);
-        }, 5000);
+        }, 500);
         return () => {
             setIsConnected(false);
             // connection.disconnect();

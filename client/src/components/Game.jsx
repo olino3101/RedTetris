@@ -5,7 +5,6 @@ import { useGameOver } from "/src/hooks/UseGameOver";
 const Game = ({ rows, columns }) => {
     const [gameOver, setGameOver, resetGameOver] = useGameOver();
     const start = () => resetGameOver();
-    // debugger;
 
     return (
         <div className="Game">
