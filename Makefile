@@ -13,6 +13,9 @@ caddy-fmt:
 	docker run --rm -v "./caddy:/etc/caddy" caddy:2.7-alpine sh -c 'caddy fmt -w /etc/caddy/Caddyfile.dev && caddy fmt -w /etc/caddy/Caddyfile.prod'
 
 
+re: dev-down dev
+
+
 # Running containers detached
 dev-d:
 	docker compose -f docker-compose.dev.yml up --build -d

@@ -27,7 +27,7 @@ services:
 
   caddy:
     container_name: redtetris-caddy-dev
-    attach: false
+    attach: true
     image: caddy:2.10
     depends_on:
       - client
