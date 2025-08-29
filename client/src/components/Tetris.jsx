@@ -14,7 +14,6 @@ const Tetris = ({ rows, columns, setGameOver }) => {
   const [gameStats, addLinesCleared] = useGameStats();
   const [player, setPlayer, resetPlayer] = usePlayer();
   const [addIndestructibleLines, players] = useServerData();
-  // debugger;
 
   const [board, setBoard] = useBoard(
     {

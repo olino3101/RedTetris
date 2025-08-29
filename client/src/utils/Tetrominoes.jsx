@@ -73,19 +73,23 @@ export const transferToBoard = ({
     rows,
     shape
 }) => {
-    shape.forEach((row, y) => {
-        row.forEach((cell, x) => {
-            if (cell) {
-                const occupied = isOccupied;
-                const _y = y + position.row;
-                const _x = x + position.column;
-                rows[_y][_x] = { occupied, className };
+    const newRows = [...rows].map((row, y) =>
+        row.map((cell, x) => {
+            const shapeY = y - position.row;
+            const shapeX = x - position.column;
 
+            const isInsideShape =
+                shapeY >= 0 && shapeY < shape.length &&
+                shapeX >= 0 && shapeX < shape[0].length;
+
+            if (isInsideShape && shape[shapeY][shapeX]) {
+                return { occupied: isOccupied, className };
             }
-        });
-    });
-    // debugger
-    return rows;
+
+            return cell;
+        })
+    );
+    return newRows;
 }
 
 export const rotate = ({ piece, direction }) => {
