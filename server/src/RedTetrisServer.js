@@ -33,6 +33,11 @@ export default class RedTetrisServer {
                 return;
             }
 
+            // IMPORTANT: Let Socket.IO handle its own transport endpoints.
+            if (req.url.startsWith("/socket.io")) {
+                return; // Do not send a response; Socket.IO listener (added later) will respond.
+            }
+
             res.writeHead(404, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: "Not Found" }));
         });

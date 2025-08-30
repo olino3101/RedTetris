@@ -7,16 +7,16 @@ const PORT = Number(process.env.PORT) || 3000;
 const DOMAIN_NAME = process.env.DOMAIN_NAME || "localhost";
 const HTTPS_PORT = process.env.HTTPS_PORT || "4243";
 
-const server = new RedTetrisServer();
-const socket = new SocketCommunication(server);
+const redTetrisServer = new RedTetrisServer();
+const socket = new SocketCommunication(redTetrisServer.server);
 
-server.start(HOST, PORT, DOMAIN_NAME, HTTPS_PORT);
+redTetrisServer.start(HOST, PORT, DOMAIN_NAME, HTTPS_PORT);
 
 // Graceful shutdown
 function shutdown(signal) {
     console.log(`Received ${signal}. Shutting down...`);
     socket.close();
-    server.close();
+    redTetrisServer.close();
 
     // Force exit if not closed in time
     setTimeout(() => {
