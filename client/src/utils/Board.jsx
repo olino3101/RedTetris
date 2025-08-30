@@ -15,20 +15,18 @@ export const buildBoard = ({ rows, columns }) => {
 };
 
 const findDropPosition = ({ board, position, shape }) => {
-  let max = board.size.rows - position.row + 1;
-  let row = 0;
+  const max = board.size.rows - position.row;
 
-  for (let i = 0; i < max; i++) {
+  const iCollided = (max, i) => {
     const delta = { row: i, column: 0 };
     const result = movePlayer({ delta, position, shape, board });
     const { collided } = result;
-
-    if (collided) {
-      break;
-    }
-
-    row = position.row + i;
+    if (!collided && i !== max)
+      return iCollided(max, i + 1);
+    return i - 1;
   }
+  const row = position.row + iCollided(max, 0);
+
   return { ...position, row };
 }
 
@@ -164,8 +162,6 @@ const updateGhostAndTetromino = (
     tetromino,
     position
   }) => {
-  console.log(className);
-  console.log(player, rows);
   const updateGhost = transferToBoard({
     className,
     isOccupied: player.isFastDropping,
