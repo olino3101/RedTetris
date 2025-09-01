@@ -1,14 +1,77 @@
+/* ---------- Reset ---------- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* ---------- App Container ---------- */
 .App {
-  font-family: sans-serif;
+  font-family: 'Fredoka One', 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
   text-align: center;
-  color: white;
-  background-color: purple;
-  height: 100vh;
+  color: #ff7eb9;
+  background: linear-gradient(135deg, #ffe6fa 0%, #c1f7fa 100%);
+  min-height: 100vh;
+  position: relative;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Floating pastel bubbles */
+.App::before,
+.App::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.25;
+  filter: blur(2px);
+}
+
+.App::before {
+  width: 400px;
+  height: 400px;
+  left: -120px;
+  top: -120px;
+  background: radial-gradient(circle, #ffb3ba 60%, transparent 100%);
+  animation: float1 12s ease-in-out infinite alternate;
+}
+
+.App::after {
+  width: 300px;
+  height: 300px;
+  right: -80px;
+  bottom: -80px;
+  background: radial-gradient(circle, #bae1ff 60%, transparent 100%);
+  animation: float2 14s ease-in-out infinite alternate;
+}
+
+@keyframes float1 {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(40px);
+  }
+}
+
+@keyframes float2 {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-40px);
+  }
+}
+
+.App>* {
+  position: relative;
+  z-index: 1;
 }

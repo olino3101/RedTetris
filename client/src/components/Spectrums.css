@@ -1,18 +1,83 @@
-.Spectrum {
-    position: absolute;
-    top: 0;
-    left: 72.2vw;
-    background-color: rgba(0, 0, 0, 0.1);
-    border: 10px solid rgba(0, 0, 0, 0);
-    border-radius: 10;
+/* Reserve space on the right so the centered board doesn't sit under the Spectrum */
+:root {
+    --spectrum-dock: clamp(140px, 14vw, 280px);
+    --spectrum-size: clamp(90px, 11vw, 180px);
 }
 
+/* Your main app wrapper around the board */
+.Tetris {
+    position: relative;
+    padding-right: var(--spectrum-dock);
+    /* pushes board left just enough */
+}
 
+/* Spectrum fixed to middle-right, like GameStats but centered vertically */
+.Spectrum {
+    position: fixed;
+    top: 50%;
+    right: 2vw;
+    /* align with GameStats__right spacing */
+    transform: translateY(-50%);
+    z-index: 90;
+    /* under GameStats (100), over board */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 10px solid transparent;
+    border-radius: 12px;
+    padding: 10px;
+
+    max-height: calc(100vh - 10vh);
+    overflow: auto;
+    /* scroll if many players */
+    pointer-events: auto;
+}
+
+/* Each player's mini-board */
 .Spectrum-board {
     display: grid;
     gap: 2px;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
-    width: 11vw;
-    height: 11vw;
+    width: var(--spectrum-size);
+    height: var(--spectrum-size);
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 1100px) {
+    :root {
+        --spectrum-dock: clamp(120px, 18vw, 240px);
+        --spectrum-size: clamp(100px, 14vw, 200px);
+    }
+}
+
+@media (max-width: 850px) {
+
+    /* On small screens, drop Spectrum below the board and center it */
+    .Tetris {
+        padding-right: 0;
+    }
+
+    .Spectrum {
+        position: static;
+        transform: none;
+        margin-top: 16px;
+        right: auto;
+        top: auto;
+
+        flex-direction: row;
+        /* show spectrums side-by-side on mobile */
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        max-height: none;
+    }
+
+    :root {
+        --spectrum-size: clamp(88px, 22vw, 160px);
+    }
 }

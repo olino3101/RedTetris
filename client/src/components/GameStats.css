@@ -1,24 +1,59 @@
+.GameStats {
+    position: fixed;
+    width: auto;
+    list-style-type: none;
+    color: #ff7eb9;
+    z-index: 100;
+    font-family: 'Fredoka One', 'Comic Neue', sans-serif;
+    background: #fff6e7cc;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px #ffb3ba33;
+    padding: 18px 28px;
+    margin: 0;
+    font-size: 1.1rem;
+    border: 2px solid #ffb3ba;
+}
+
 .GameStats__left {
-    right: 0;
-    top: 22vh;
+    left: 2vw;
+    top: 5vh;
     text-align: left;
 }
 
 .GameStats__right {
-    right: 0;
-    bottom: 0;
-    text-align: left;
-}
-
-.GameStats {
-    position: absolute;
-    width: 22vw;
-    list-style-type: none;
-    color: rgba(255, 255, 255, 0.5);
+    right: 2vw;
+    top: 5vh;
+    text-align: right;
 }
 
 .GameStats .value {
-    font-size: 2.8rem;
+    font-size: 2.5rem;
     margin-bottom: 0.5em;
-    color: rgba(255,255,255,1);
+    color: #ff7eb9;
+    text-shadow: 2px 2px 0 #fff6e7, 0 0 8px #bae1ff88;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 800px) {
+    .Board {
+        width: 80vmin;
+        height: 160vmin;
+    }
+
+    .BoardCell {
+        width: 7vw;
+        height: 7vw;
+    }
+
+    .GameStats .value {
+        font-size: 2rem;
+    }
+
+    .GameStats__left {
+        left: 3vw;
+    }
+
+    .GameStats__right {
+        right: 3vw;
+    }
 }

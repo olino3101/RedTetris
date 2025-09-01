@@ -1,65 +1,95 @@
 .BoardCell {
-    width: auto;
-    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    margin: 0;
     position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffe6fa;
+    border-radius: 10px;
+    border: 2px solid #ffb3ba33;
+    box-shadow: 0 1px 4px #ffb3ba22;
+    transition: background 0.2s, transform 0.1s;
 }
 
 .indestructible {
-    background-color: rgba(200, 200, 200, 0.6);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background: #bae1ff;
+    border: 2px solid #baffc9;
+    box-shadow: 0 0 10px #bae1ff88;
+    animation: kawaii-pulse 1.5s infinite alternate;
 }
 
 .tetromino {
-    border-top: 3px solid rgba(255, 255, 255, 0.1);
-    border-left: 3px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 3px solid rgba(0, 0, 0, 0.1);
-    border-right: 3px solid rgba(0, 0, 0, 0.1);
-}
-
-.tetromino.ghost {
-    background-color: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.tetromino .Sparkle {
-    position: absolute;
-    z-index: 10;
-    width: 6px;
-    height: 6px;
-    left: -2px;
-    top: -2px;
-    background-color: rgba(255, 255, 255, 0.4);
-    border-radius: 4px 4px;
-}
-
-.tetromino.ghost .Sparkle {
-    opacity: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background: #fff6e7;
+    border: 2px solid currentColor;
+    box-shadow: 0 0 10px currentColor, 0 0 0 4px #fff6e7 inset;
+    animation: kawaii-pop 0.2s;
 }
 
 .tetromino__i {
-    background-color: rgba(80, 227, 230, 1);
-}
-
-.tetromino__j {
-    background-color: rgba(36, 95, 223, 1);
-}
-
-.tetromino__l {
-    background-color: rgba(223, 173, 36, 1);
+    color: #00f0ff;
 }
 
 .tetromino__o {
-    background-color: rgba(223, 217, 36, 1);
-}
-
-.tetromino__s {
-    background-color: rgba(48, 211, 56, 1);
+    color: #ffff00;
 }
 
 .tetromino__t {
-    background-color: rgba(132, 61, 198, 1);
+    color: #ff7eb9;
+}
+
+.tetromino__s {
+    color: #00ff55;
 }
 
 .tetromino__z {
-    background-color: rgba(240, 80, 230, 1);
+    color: #ff0055;
+}
+
+.tetromino__l {
+    color: #ff9900;
+}
+
+.tetromino__j {
+    color: #3399ff;
+}
+
+.tetromino.ghost {
+    background: repeating-linear-gradient(135deg,
+            #ff7eb944,
+            #ff7eb944 8px,
+            #0000 8px,
+            #0000 16px);
+    border: 2px dashed #bae1ff;
+    opacity: 0.5;
+    box-shadow: none;
+}
+
+@keyframes kawaii-pop {
+    0% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes kawaii-pulse {
+    0% {
+        box-shadow: 0 0 10px #bae1ff88;
+    }
+
+    100% {
+        box-shadow: 0 0 24px #baffc988;
+    }
 }

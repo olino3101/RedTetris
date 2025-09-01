@@ -14,6 +14,7 @@ export const buildBoard = ({ rows, columns }) => {
   };
 };
 
+
 const findDropPosition = ({ board, position, shape }) => {
   const max = board.size.rows - position.row;
 

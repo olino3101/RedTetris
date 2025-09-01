@@ -15,6 +15,7 @@ const Tetris = ({ rows, columns, setGameOver }) => {
   const [player, setPlayer, resetPlayer] = usePlayer();
   const [addIndestructibleLines, players] = useServerData();
 
+
   const [board, setBoard] = useBoard(
     {
       rows,
@@ -29,7 +30,7 @@ const Tetris = ({ rows, columns, setGameOver }) => {
     <div className="Tetris">
       <Board board={board} />
       <GameStats gameStats={gameStats} />
-      <Spectrums players={players} />
+      <Spectrums players={board} />
       <GameController
         board={board}
         gameStats={gameStats}

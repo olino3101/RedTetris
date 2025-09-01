@@ -8,7 +8,7 @@ import { buildBoard } from "/src/utils/Board";
 import BoardCell from "/src/components/BoardCell";
 
 const Spectrum = ({ player, index }) => {
-    const board = buildBoard({ rows: 4, columns: 4 });
+    const board = buildBoard({ rows: 20, columns: 10 });
 
     const style = {
         top: `${index * 15}vw`

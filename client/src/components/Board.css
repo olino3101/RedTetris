@@ -1,31 +1,29 @@
 .Board {
+    --cols: 10;
+    --rows: 20;
+    --gap: 5px;
+    --padding: 18px;
+
     margin: 2em auto;
     display: grid;
-    grid-gap: 2px;
-    width: 45vw;
-    height: 90vw;
-    background-color: rgb(32, 0, 64);
-    border: 10px solid rgb(32, 0, 64);
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    grid-gap: var(--gap);
+    padding: var(--padding);
+    width: min(90vw, 420px);
+    aspect-ratio: var(--cols) / var(--rows);
+
+    background: linear-gradient(135deg, #fff6e7 60%, #ffe6fa 100%);
+    border: 6px solid #ffb3ba;
+    border-radius: 28px;
+    box-shadow: 0 8px 32px #ffb3ba55, 0 0 0 8px #fff6e7 inset;
+    grid-template-columns: repeat(var(--cols),
+            calc((100% - 2 * var(--padding) - (var(--cols) - 1) * var(--gap)) / var(--cols)));
+    grid-template-rows: repeat(var(--rows),
+            calc((100% - 2 * var(--padding) - (var(--rows) - 1) * var(--gap)) / var(--rows)));
+    transition: box-shadow 0.3s;
 }
 
-/* 
-.Board {
-    margin: 2em auto;
-    display: grid;
-    grid-gap: 2px;
-    width: 45vw;
-    height: 90vw;
-
-    background-color: rgb(32, 0, 64);
-    border: 10px solid rgb(32, 0, 64);
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+.Board>div:hover {
+    transform: scale(1.07) rotate(-2deg);
+    box-shadow: 0 0 16px #ffb3ba99;
+    transition: transform 0.1s, box-shadow 0.1s;
 }
-
-
-.Board>div {
-    background-color: rgb(163, 163, 163);
-    border-radius: 2px;
-} */
