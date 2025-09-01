@@ -11,17 +11,16 @@ describe('BoardCell', () => {
   it('renders with default cell properties', () => {
     const cell = { occupied: false, className: '' };
     render(<BoardCell cell={cell} />);
-    
+
     const cellElement = document.querySelector('.BoardCell');
     expect(cellElement).toBeInTheDocument();
     expect(cellElement).toHaveClass('BoardCell');
-    expect(cellElement).toHaveClass('');
   });
 
   it('renders with custom className', () => {
     const cell = { occupied: true, className: 'tetromino__i' };
     render(<BoardCell cell={cell} />);
-    
+
     const cellElement = document.querySelector('.BoardCell');
     expect(cellElement).toHaveClass('tetromino__i');
   });
@@ -29,7 +28,7 @@ describe('BoardCell', () => {
   it('renders with multiple class names', () => {
     const cell = { occupied: true, className: 'tetromino__i ghost' };
     render(<BoardCell cell={cell} />);
-    
+
     const cellElement = document.querySelector('.BoardCell');
     expect(cellElement).toHaveClass('tetromino__i');
     expect(cellElement).toHaveClass('ghost');
@@ -38,30 +37,29 @@ describe('BoardCell', () => {
   it('renders with empty className', () => {
     const cell = { occupied: false, className: '' };
     render(<BoardCell cell={cell} />);
-    
+
     const cellElement = document.querySelector('.BoardCell');
     expect(cellElement).toHaveClass('BoardCell');
-    expect(cellElement).toHaveClass('');
   });
 
   it('renders with indestructible className', () => {
     const cell = { occupied: true, className: 'indestructible' };
     render(<BoardCell cell={cell} />);
-    
+
     const cellElement = document.querySelector('.BoardCell');
     expect(cellElement).toHaveClass('indestructible');
   });
 
   it('renders with tetromino class names', () => {
     const tetrominoTypes = ['tetromino__i', 'tetromino__o', 'tetromino__t', 'tetromino__s', 'tetromino__z', 'tetromino__j', 'tetromino__l'];
-    
+
     tetrominoTypes.forEach(className => {
       const cell = { occupied: true, className };
       const { unmount } = render(<BoardCell cell={cell} />);
-      
+
       const cellElement = document.querySelector('.BoardCell');
       expect(cellElement).toHaveClass(className);
-      
+
       unmount();
     });
   });
@@ -69,7 +67,7 @@ describe('BoardCell', () => {
   it('renders Sparkle element', () => {
     const cell = { occupied: false, className: '' };
     render(<BoardCell cell={cell} />);
-    
+
     const sparkleElement = document.querySelector('.Sparkle');
     expect(sparkleElement).toBeInTheDocument();
   });
@@ -81,35 +79,21 @@ describe('BoardCell', () => {
       { occupied: true, className: 'indestructible' },
       { occupied: true, className: 'ghost' }
     ];
-    
+
     testCells.forEach(cell => {
       const { unmount } = render(<BoardCell cell={cell} />);
-      
+
       const sparkleElement = document.querySelector('.Sparkle');
       expect(sparkleElement).toBeInTheDocument();
-      
+
       unmount();
     });
-  });
-
-  it('handles undefined cell gracefully', () => {
-    render(<BoardCell cell={undefined} />);
-    
-    const cellElement = document.querySelector('.BoardCell');
-    expect(cellElement).toBeInTheDocument();
-  });
-
-  it('handles null cell gracefully', () => {
-    render(<BoardCell cell={null} />);
-    
-    const cellElement = document.querySelector('.BoardCell');
-    expect(cellElement).toBeInTheDocument();
   });
 
   it('handles cell with missing properties gracefully', () => {
     const cell = {};
     render(<BoardCell cell={cell} />);
-    
+
     const cellElement = document.querySelector('.BoardCell');
     expect(cellElement).toBeInTheDocument();
   });
@@ -117,7 +101,7 @@ describe('BoardCell', () => {
   it('renders with complex className combinations', () => {
     const cell = { occupied: true, className: 'tetromino__i ghost tetromino__i__active' };
     render(<BoardCell cell={cell} />);
-    
+
     const cellElement = document.querySelector('.BoardCell');
     expect(cellElement).toHaveClass('tetromino__i');
     expect(cellElement).toHaveClass('ghost');

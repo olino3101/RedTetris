@@ -52,7 +52,7 @@ describe('Tetris', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockUseGameStats.mockReturnValue([mockGameStats, jest.fn()]);
     mockUsePlayer.mockReturnValue([mockPlayer, jest.fn(), jest.fn()]);
     mockUseServerData.mockReturnValue([jest.fn(), []]);
@@ -65,7 +65,7 @@ describe('Tetris', () => {
 
   it('renders all required components', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     expect(document.querySelector('.Tetris')).toBeInTheDocument();
     expect(document.querySelector('.Board')).toBeInTheDocument();
     expect(document.querySelector('.GameStats')).toBeInTheDocument();
@@ -75,25 +75,25 @@ describe('Tetris', () => {
 
   it('calls useGameStats hook correctly', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     expect(mockUseGameStats).toHaveBeenCalledTimes(1);
   });
 
   it('calls usePlayer hook correctly', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     expect(mockUsePlayer).toHaveBeenCalledTimes(1);
   });
 
   it('calls useServerData hook correctly', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     expect(mockUseServerData).toHaveBeenCalledTimes(1);
   });
 
   it('calls useBoard hook with correct parameters', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     expect(mockUseBoard).toHaveBeenCalledWith({
       rows: 20,
       columns: 10,
@@ -106,28 +106,28 @@ describe('Tetris', () => {
 
   it('passes correct props to Board component', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     // Board should receive the board prop
     expect(document.querySelector('.Board')).toBeInTheDocument();
   });
 
   it('passes correct props to GameStats component', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     // GameStats should receive the gameStats prop
     expect(document.querySelector('.GameStats')).toBeInTheDocument();
   });
 
   it('passes correct props to Spectrums component', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     // Spectrums should receive the players prop (which is the board)
     expect(document.querySelector('.Spectrums')).toBeInTheDocument();
   });
 
   it('passes correct props to GameController component', () => {
     render(<Tetris {...defaultProps} />);
-    
+
     // GameController should receive all the required props
     expect(document.querySelector('.GameController')).toBeInTheDocument();
   });
@@ -135,7 +135,7 @@ describe('Tetris', () => {
   it('handles different board sizes correctly', () => {
     const customProps = { rows: 15, columns: 8, setGameOver: jest.fn() };
     render(<Tetris {...customProps} />);
-    
+
     expect(mockUseBoard).toHaveBeenCalledWith({
       rows: 15,
       columns: 8,
@@ -149,7 +149,7 @@ describe('Tetris', () => {
   it('calls setGameOver when passed as prop', () => {
     const setGameOver = jest.fn();
     render(<Tetris {...defaultProps} setGameOver={setGameOver} />);
-    
+
     // The setGameOver function should be passed to GameController
     expect(document.querySelector('.GameController')).toBeInTheDocument();
   });

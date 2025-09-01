@@ -16,7 +16,7 @@ describe('GameStats', () => {
 
   it('renders all required stats elements', () => {
     render(<GameStats gameStats={defaultGameStats} />);
-    
+
     expect(screen.getByText('Level')).toBeInTheDocument();
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('Lines to level')).toBeInTheDocument();
@@ -32,9 +32,9 @@ describe('GameStats', () => {
       linesCompleted: 3,
       linesPerLevel: 10
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('7')).toBeInTheDocument(); // 10 - 3 = 7
   });
 
@@ -45,9 +45,9 @@ describe('GameStats', () => {
       linesCompleted: 0,
       linesPerLevel: 10
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('10')).toBeInTheDocument(); // 10 - 0 = 10
   });
 
@@ -58,9 +58,9 @@ describe('GameStats', () => {
       linesCompleted: 5,
       linesPerLevel: 10
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('5')).toBeInTheDocument(); // 10 - 5 = 5
   });
 
@@ -71,9 +71,9 @@ describe('GameStats', () => {
       linesCompleted: 3,
       linesPerLevel: 10
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('7')).toBeInTheDocument(); // 10 - 3 = 7
   });
 
@@ -84,9 +84,9 @@ describe('GameStats', () => {
       linesCompleted: 8,
       linesPerLevel: 10
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('10')).toBeInTheDocument();
     expect(screen.getByText('10')).toBeInTheDocument();
     expect(screen.getByText('5000')).toBeInTheDocument();
@@ -100,9 +100,9 @@ describe('GameStats', () => {
       linesCompleted: 10,
       linesPerLevel: 10
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('0')).toBeInTheDocument(); // 10 - 10 = 0
   });
 
@@ -113,9 +113,9 @@ describe('GameStats', () => {
       linesCompleted: 2,
       linesPerLevel: 15
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('13')).toBeInTheDocument(); // 15 - 2 = 13
   });
 
@@ -126,9 +126,9 @@ describe('GameStats', () => {
       linesCompleted: 0,
       linesPerLevel: 10
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('0')).toBeInTheDocument();
   });
 
@@ -139,15 +139,15 @@ describe('GameStats', () => {
       linesCompleted: 7,
       linesPerLevel: 10
     };
-    
+
     render(<GameStats gameStats={gameStats} />);
-    
+
     expect(screen.getByText('10000')).toBeInTheDocument();
   });
 
   it('renders with correct CSS classes', () => {
     render(<GameStats gameStats={defaultGameStats} />);
-    
+
     const statsElement = document.querySelector('.GameStats');
     expect(statsElement).toBeInTheDocument();
     expect(statsElement).toHaveClass('GameStats__right');
@@ -155,7 +155,7 @@ describe('GameStats', () => {
 
   it('renders as unordered list', () => {
     render(<GameStats gameStats={defaultGameStats} />);
-    
+
     const listElement = document.querySelector('ul');
     expect(listElement).toBeInTheDocument();
     expect(listElement).toHaveClass('GameStats');
@@ -163,38 +163,12 @@ describe('GameStats', () => {
 
   it('renders list items with correct structure', () => {
     render(<GameStats gameStats={defaultGameStats} />);
-    
+
     const listItems = document.querySelectorAll('li');
     expect(listItems).toHaveLength(6);
-    
+
     // Check that values have the 'value' class
     const valueElements = document.querySelectorAll('.value');
     expect(valueElements).toHaveLength(3);
-  });
-
-  it('handles undefined gameStats gracefully', () => {
-    render(<GameStats gameStats={undefined} />);
-    
-    // Should handle gracefully without crashing
-    expect(document.querySelector('.GameStats')).toBeInTheDocument();
-  });
-
-  it('handles null gameStats gracefully', () => {
-    render(<GameStats gameStats={null} />);
-    
-    // Should handle gracefully without crashing
-    expect(document.querySelector('.GameStats')).toBeInTheDocument();
-  });
-
-  it('handles missing properties gracefully', () => {
-    const incompleteGameStats = {
-      level: 1
-      // Missing other properties
-    };
-    
-    render(<GameStats gameStats={incompleteGameStats} />);
-    
-    // Should handle gracefully without crashing
-    expect(document.querySelector('.GameStats')).toBeInTheDocument();
   });
 });

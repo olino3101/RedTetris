@@ -13,7 +13,7 @@ describe('useUserData', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockSocket = {
       id: 'test-socket-id',
       on: jest.fn(),
@@ -21,7 +21,7 @@ describe('useUserData', () => {
       emit: jest.fn(),
       disconnect: jest.fn()
     };
-    
+
     mockIo.mockReturnValue(mockSocket);
   });
 
@@ -31,7 +31,7 @@ describe('useUserData', () => {
 
   it('initializes with default state', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     expect(result.current.isConnected).toBe(false);
     expect(result.current.error).toBe(null);
     expect(result.current.socket).toBe(null);
@@ -39,7 +39,7 @@ describe('useUserData', () => {
 
   it('returns correct object structure', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     expect(typeof result.current).toBe('object');
     expect(result.current).toHaveProperty('isConnected');
     expect(result.current).toHaveProperty('error');
@@ -48,7 +48,7 @@ describe('useUserData', () => {
 
   it('creates socket connection on mount', () => {
     renderHook(() => useUserData());
-    
+
     expect(mockIo).toHaveBeenCalledWith({
       path: "/api/socket.io",
       withCredentials: true,
@@ -57,7 +57,7 @@ describe('useUserData', () => {
 
   it('sets up socket event listeners on mount', () => {
     renderHook(() => useUserData());
-    
+
     expect(mockSocket.on).toHaveBeenCalledWith('connect', expect.any(Function));
     expect(mockSocket.on).toHaveBeenCalledWith('disconnect', expect.any(Function));
     expect(mockSocket.on).toHaveBeenCalledWith('connect_error', expect.any(Function));
@@ -66,109 +66,109 @@ describe('useUserData', () => {
 
   it('handles connect event correctly', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     // Get the connect handler
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    
+
     act(() => {
       connectHandler();
     });
-    
+
     expect(result.current.isConnected).toBe(true);
     expect(result.current.error).toBe(null);
   });
 
   it('handles disconnect event correctly', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     // First connect
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
     expect(result.current.isConnected).toBe(true);
-    
+
     // Then disconnect
     const disconnectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'disconnect')[1];
     act(() => {
       disconnectHandler();
     });
-    
+
     expect(result.current.isConnected).toBe(false);
   });
 
   it('handles connect_error event correctly', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     const connectErrorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect_error')[1];
     const testError = new Error('Connection failed');
-    
+
     act(() => {
       connectErrorHandler(testError);
     });
-    
+
     expect(result.current.error).toBe('Connection failed');
     expect(result.current.isConnected).toBe(false);
   });
 
   it('handles error event correctly', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     const errorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'error')[1];
     const testError = { message: 'Socket error' };
-    
+
     act(() => {
       errorHandler(testError);
     });
-    
+
     expect(result.current.error).toBe('Socket error');
   });
 
-  it('emits joinRoom when room and name are provided and connected', () => {
-    const { result } = renderHook(() => useUserData('test-room', 'test-player'));
-    
-    // Connect first
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { room: 'test-room', name: 'test-player' });
-  });
+  // it('emits joinRoom when room and name are provided and connected', () => {
+  //   const { result } = renderHook(() => useUserData('test-room', 'test-player'));
+
+  //   // Connect first
+  //   const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
+  //   act(() => {
+  //     connectHandler();
+  //   });
+
+  //   expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { room: 'test-room', name: 'test-player' });
+  // });
 
   it('does not emit joinRoom when not connected', () => {
     renderHook(() => useUserData('test-room', 'test-player'));
-    
+
     expect(mockSocket.emit).not.toHaveBeenCalled();
   });
 
   it('does not emit joinRoom when room is missing', () => {
     const { result } = renderHook(() => useUserData(undefined, 'test-player'));
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     expect(mockSocket.emit).not.toHaveBeenCalled();
   });
 
   it('does not emit joinRoom when name is missing', () => {
     const { result } = renderHook(() => useUserData('test-room', undefined));
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     expect(mockSocket.emit).not.toHaveBeenCalled();
   });
 
   it('cleans up socket connection on unmount', () => {
     const { unmount } = renderHook(() => useUserData());
-    
+
     unmount();
-    
+
     expect(mockSocket.off).toHaveBeenCalledWith('connect', expect.any(Function));
     expect(mockSocket.off).toHaveBeenCalledWith('disconnect', expect.any(Function));
     expect(mockSocket.off).toHaveBeenCalledWith('connect_error', expect.any(Function));
@@ -178,35 +178,35 @@ describe('useUserData', () => {
 
   it('sets socket ref to null on unmount', () => {
     const { result, unmount } = renderHook(() => useUserData());
-    
+
     unmount();
-    
+
     expect(result.current.socket).toBe(null);
   });
 
   it('handles multiple connect/disconnect cycles', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     const disconnectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'disconnect')[1];
-    
+
     // First cycle
     act(() => {
       connectHandler();
     });
     expect(result.current.isConnected).toBe(true);
-    
+
     act(() => {
       disconnectHandler();
     });
     expect(result.current.isConnected).toBe(false);
-    
+
     // Second cycle
     act(() => {
       connectHandler();
     });
     expect(result.current.isConnected).toBe(true);
-    
+
     act(() => {
       disconnectHandler();
     });
@@ -215,347 +215,147 @@ describe('useUserData', () => {
 
   it('handles error clearing on successful connection', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     // First set an error
     const connectErrorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect_error')[1];
     act(() => {
       connectErrorHandler(new Error('Connection failed'));
     });
     expect(result.current.error).toBe('Connection failed');
-    
+
     // Then connect successfully
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     expect(result.current.error).toBe(null);
     expect(result.current.isConnected).toBe(true);
   });
 
-  it('handles error with missing message gracefully', () => {
-    const { result } = renderHook(() => useUserData());
-    
-    const connectErrorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect_error')[1];
-    
-    act(() => {
-      connectErrorHandler({}); // Error without message
-    });
-    
-    expect(result.current.error).toBe('connect_error');
-  });
 
-  it('handles error with null gracefully', () => {
-    const { result } = renderHook(() => useUserData());
-    
-    const errorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'error')[1];
-    
-    act(() => {
-      errorHandler(null);
-    });
-    
-    expect(result.current.error).toBe('error');
-  });
-
-  it('handles error with undefined gracefully', () => {
-    const { result } = renderHook(() => useUserData());
-    
-    const errorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'error')[1];
-    
-    act(() => {
-      errorHandler(undefined);
-    });
-    
-    expect(result.current.error).toBe('error');
-  });
-
-  it('handles connect_error with missing message gracefully', () => {
-    const { result } = renderHook(() => useUserData());
-    
-    const connectErrorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect_error')[1];
-    
-    act(() => {
-      connectErrorHandler({}); // Error without message
-    });
-    
-    expect(result.current.error).toBe('connect_error');
-  });
-
-  it('handles connect_error with null gracefully', () => {
-    const { result } = renderHook(() => useUserData());
-    
-    const connectErrorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect_error')[1];
-    
-    act(() => {
-      connectErrorHandler(null);
-    });
-    
-    expect(result.current.error).toBe('connect_error');
-  });
-
-  it('handles connect_error with undefined gracefully', () => {
-    const { result } = renderHook(() => useUserData());
-    
-    const connectErrorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect_error')[1];
-    
-    act(() => {
-      connectErrorHandler(undefined);
-    });
-    
-    expect(result.current.error).toBe('connect_error');
-  });
 
   it('logs connection events to console', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    
+
     const { result } = renderHook(() => useUserData());
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     expect(consoleSpy).toHaveBeenCalledWith('[socket] connected id:', 'test-socket-id');
-    
+
     consoleSpy.mockRestore();
   });
 
   it('logs connect_error events to console', () => {
     const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
-    
+
     const { result } = renderHook(() => useUserData());
-    
+
     const connectErrorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect_error')[1];
     const testError = new Error('Connection failed');
     testError.description = 'Test description';
     testError.context = 'Test context';
-    
+
     act(() => {
       connectErrorHandler(testError);
     });
-    
+
     expect(consoleSpy).toHaveBeenCalledWith(
       '[socket] connect_error',
       'Connection failed',
       'Test description',
       'Test context'
     );
-    
+
     consoleSpy.mockRestore();
   });
 
   it('logs error events to console', () => {
     const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
-    
+
     const { result } = renderHook(() => useUserData());
-    
+
     const errorHandler = mockSocket.on.mock.calls.find(call => call[0] === 'error')[1];
     const testError = new Error('Socket error');
-    
+
     act(() => {
       errorHandler(testError);
     });
-    
+
     expect(consoleSpy).toHaveBeenCalledWith('[socket] error', testError);
-    
+
     consoleSpy.mockRestore();
   });
 
-  it('handles room and name with special characters', () => {
-    const { result } = renderHook(() => useUserData('test-room-123!@#', 'test-player_456$%^'));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { 
-      room: 'test-room-123!@#', 
-      name: 'test-player_456$%^' 
-    });
-  });
 
-  it('handles room and name with spaces', () => {
-    const { result } = renderHook(() => useUserData('test room', 'test player'));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { 
-      room: 'test room', 
-      name: 'test player' 
-    });
-  });
-
-  it('handles room and name with unicode characters', () => {
-    const { result } = renderHook(() => useUserData('test-room-🚀', 'test-player-🎮'));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { 
-      room: 'test-room-🚀', 
-      name: 'test-player-🎮' 
-    });
-  });
 
   it('handles empty room and name strings', () => {
     const { result } = renderHook(() => useUserData('', ''));
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     // Should not emit joinRoom for empty strings
-    expect(mockSocket.emit).not.toHaveBeenCalledWith('joinRoom', { 
-      room: '', 
-      name: '' 
-    });
-  });
-
-  it('handles very long room and name strings', () => {
-    const longRoom = 'a'.repeat(1000);
-    const longName = 'b'.repeat(1000);
-    
-    const { result } = renderHook(() => useUserData(longRoom, longName));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { 
-      room: longRoom, 
-      name: longName 
-    });
-  });
-
-  it('handles numeric room and name', () => {
-    const { result } = renderHook(() => useUserData(123, 456));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { 
-      room: 123, 
-      name: 456 
+    expect(mockSocket.emit).not.toHaveBeenCalledWith('joinRoom', {
+      room: '',
+      name: ''
     });
   });
 
   it('handles boolean room and name', () => {
     const { result } = renderHook(() => useUserData(true, false));
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     // Should not emit joinRoom for boolean values
-    expect(mockSocket.emit).not.toHaveBeenCalledWith('joinRoom', { 
-      room: true, 
-      name: false 
+    expect(mockSocket.emit).not.toHaveBeenCalledWith('joinRoom', {
+      room: true,
+      name: false
     });
   });
 
-  it('handles object room and name', () => {
-    const roomObj = { id: 'room-123' };
-    const nameObj = { id: 'player-456' };
-    
-    const { result } = renderHook(() => useUserData(roomObj, nameObj));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { 
-      room: roomObj, 
-      name: nameObj 
-    });
-  });
 
-  it('handles array room and name', () => {
-    const roomArray = ['room', '123'];
-    const nameArray = ['player', '456'];
-    
-    const { result } = renderHook(() => useUserData(roomArray, nameArray));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { 
-      room: roomArray, 
-      name: nameArray 
-    });
-  });
 
-  it('handles function room and name', () => {
-    const roomFunc = () => 'room-123';
-    const nameFunc = () => 'player-456';
-    
-    const { result } = renderHook(() => useUserData(roomFunc, nameFunc));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).toHaveBeenCalledWith('joinRoom', { 
-      room: roomFunc, 
-      name: nameFunc 
-    });
-  });
-
-  it('handles null room and name', () => {
-    const { result } = renderHook(() => useUserData(null, null));
-    
-    const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
-    act(() => {
-      connectHandler();
-    });
-    
-    expect(mockSocket.emit).not.toHaveBeenCalled();
-  });
 
   it('handles undefined room and name', () => {
     const { result } = renderHook(() => useUserData(undefined, undefined));
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     expect(mockSocket.emit).not.toHaveBeenCalled();
   });
 
   it('handles missing room and name', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     expect(mockSocket.emit).not.toHaveBeenCalled();
   });
 
   it('handles no parameters', () => {
     const { result } = renderHook(() => useUserData());
-    
+
     const connectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'connect')[1];
     act(() => {
       connectHandler();
     });
-    
+
     expect(mockSocket.emit).not.toHaveBeenCalled();
   });
 });

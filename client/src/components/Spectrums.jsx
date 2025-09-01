@@ -4,7 +4,7 @@ import Spectrum from "/src/components/Spectrum";
 
 const Spectrums = ({ players }) => {
     return (
-        < div className="Spectrum-dock" >
+        < div className="Spectrums" >
             {/* {previewTetrominoes.map((tetromino, index) => ( */}
             <Spectrum player={players} index={1} key={1} />
             <Spectrum player={players} index={2} key={2} />
@@ -17,4 +17,4 @@ const Spectrums = ({ players }) => {
 };
 
 
-export default React.memo(Spectrums)
+export default Spectrums

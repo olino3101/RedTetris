@@ -4,6 +4,7 @@ export default {
     moduleFileExtensions: ['js', 'jsx'],
     transform: {
         '^.+\\.(js|jsx)$': 'babel-jest',
+        '.+\\.(css|styl|less|sass|scss)$': 'jest-css-modules-transform',
     },
     moduleNameMapper: {
         '^/src/(.*)$': '<rootDir>/src/$1',

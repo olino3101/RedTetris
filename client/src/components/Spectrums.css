@@ -1,5 +1,5 @@
 /* Spectrum Docked Left, Under GameStats */
-.Spectrum-dock {
+.Spectrums {
     position: fixed;
     top: calc(5vh + 60px);
     left: 15vw;
@@ -88,7 +88,7 @@
 
 /* Mobile */
 @media (max-width: 900px) {
-    .Spectrum-dock {
+    .Spectrum {
         width: clamp(90px, 24vw, 140px);
         top: calc(5vh + 50px);
         padding: 4px 2px;
