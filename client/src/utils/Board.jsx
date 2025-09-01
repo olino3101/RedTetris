@@ -1,185 +1,203 @@
 import { defaultCell, indestructibleCell } from "./Cells";
-import { transferToBoard } from "./Tetrominoes";
+import { TETROMINOES, transferToBoard } from "./Tetrominoes";
 import { movePlayer } from "./PlayerController";
-import { punishOther } from '/src/utils/SendServer';
-
+import { punishOther } from "/src/utils/SendServer";
 
 export const buildBoard = ({ rows, columns }) => {
-  const builtRows = Array.from({ length: rows }, () =>
-    Array.from({ length: columns }, () => ({ ...defaultCell }))
-  );
-  return {
-    rows: builtRows,
-    size: { rows, columns }
-  };
+    const builtRows = Array.from({ length: rows }, () =>
+        Array.from({ length: columns }, () => ({ ...defaultCell }))
+    );
+    return {
+        rows: builtRows,
+        size: { rows, columns },
+    };
 };
 
-
 const findDropPosition = ({ board, position, shape }) => {
-  const max = board.size.rows - position.row;
+    const max = board.size.rows - position.row;
 
-  const iCollided = (max, i) => {
-    const delta = { row: i, column: 0 };
-    const result = movePlayer({ delta, position, shape, board });
-    const { collided } = result;
-    if (!collided && i !== max)
-      return iCollided(max, i + 1);
-    return i - 1;
-  }
-  const row = position.row + iCollided(max, 0);
+    const iCollided = (max, i) => {
+        const delta = { row: i, column: 0 };
+        const result = movePlayer({ delta, position, shape, board });
+        const { collided } = result;
+        if (!collided && i !== max) return iCollided(max, i + 1);
+        return i - 1;
+    };
+    const row = position.row + iCollided(max, 0);
 
-  return { ...position, row };
-}
-
+    return { ...position, row };
+};
 
 export const nextBoard = ({
-  board,
-  player,
-  resetPlayer,
-  addLinesCleared,
-  addIndestructibleLines
-}) => {
-  const { tetromino, position } = player;
-
-  const updateOccupiedRows = board.rows.map((row) =>
-    row.map((cell) => (cell.occupied ? cell : { ...defaultCell }))
-  );
-
-  const dropPosition = findDropPosition({
     board,
-    position,
-    shape: tetromino.shape
-  });
-
-  const className = `${tetromino.className} 
-    ${player.isFastDropping ? "" : "ghost"
-    }`;
-
-  // update tetromino ghost
-  const updateTetrominoRows = updateGhostAndTetromino({
-    className,
     player,
-    dropPosition,
-    rows: updateOccupiedRows,
-    tetromino,
-    position
-  });
+    resetPlayer,
+    addLinesCleared,
+    addIndestructibleLines,
+}) => {
+    const { tetromino, position } = player;
 
+    const updateOccupiedRows = board.rows.map((row) =>
+        row.map((cell) => (cell.occupied ? cell : { ...defaultCell }))
+    );
 
-  // clear the lines that are full
-  const { clearedRows, linesCleared } = clearLines(updateTetrominoRows);
+    // If no tetromino yet (still loading), return current board
+    if (!tetromino) {
+        return {
+            rows: updateOccupiedRows,
+            size: { ...board.size },
+        };
+    }
 
-  if (linesCleared > 0) {
-    addLinesCleared(linesCleared);
-  }
-  const linesToPunish = Math.round(linesCleared / 2);
-  // punish other is when you delete more then 2 lines the other receive +1 lines penalty
-  if (linesToPunish > 0)
-    punishOther(linesToPunish);
-  if (player.collided || player.isFastDropping) {
-    resetPlayer();
-  }
+    const dropPosition = findDropPosition({
+        board,
+        position,
+        shape: tetromino.shape,
+    });
 
-  // add the rows that are indestructable
-  const withIndestrucableRows = indestructibleLines(clearedRows, addIndestructibleLines);
+    const className = `${tetromino.className} 
+    ${player.isFastDropping ? "" : "ghost"}`;
 
-  return {
-    rows: withIndestrucableRows,
-    size: { ...board.size }
-  };
+    // update tetromino ghost
+    const updateTetrominoRows = updateGhostAndTetromino({
+        className,
+        player,
+        dropPosition,
+        rows: updateOccupiedRows,
+        tetromino,
+        position,
+    });
+
+    // clear the lines that are full
+    const { clearedRows, linesCleared } = clearLines(updateTetrominoRows);
+
+    if (linesCleared > 0) {
+        addLinesCleared(linesCleared);
+    }
+    const linesToPunish = Math.round(linesCleared / 2);
+    // punish other is when you delete more then 2 lines the other receive +1 lines penalty
+    if (linesToPunish > 0) punishOther(linesToPunish);
+    if (player.collided || player.isFastDropping) {
+        resetPlayer();
+    }
+
+    // add the rows that are indestructable
+    const withIndestrucableRows = indestructibleLines(
+        clearedRows,
+        addIndestructibleLines
+    );
+
+    return {
+        rows: withIndestrucableRows,
+        size: { ...board.size },
+    };
 };
 
 export const hasCollision = ({ board, position, shape }) => {
-  return !shape.every((row, y) =>
-    row.every((cell, x) => {
-      if (shape[y][x] !== 1) {
-        return true;
-      }
-      return !(board?.rows[position.row + y]?.[position.column + x])?.occupied;
-    })
-  );
+    return !shape.every((row, y) =>
+        row.every((cell, x) => {
+            if (shape[y][x] !== 1) {
+                return true;
+            }
+            return !board?.rows[position.row + y]?.[position.column + x]
+                ?.occupied;
+        })
+    );
 };
 
 export const isWithinBoard = ({ board, position, shape }) => {
-  return shape.every((row, y) =>
-    row.every((cell, x) => {
-      if (!cell) return true;
-      return !!(board.rows[position.row + y]?.[position.column + x]);
-    }
-    )
-  );
-}
+    return shape.every((row, y) =>
+        row.every((cell, x) => {
+            if (!cell) return true;
+            return !!board.rows[position.row + y]?.[position.column + x];
+        })
+    );
+};
 
 const clearLines = (rows) => {
-  const blankRow = rows[0].map((_) => ({ ...defaultCell }));
-  const { acc, linesCleared } = [...rows].reduce(({ acc, linesCleared }, row) => {
-    if (row.every((column) => column.occupied && row[0].className != "indestructible")) {
-      return {
-        acc: [...acc],
-        linesCleared: linesCleared + 1,
-      };
-    } else {
-      return {
-        acc: [...acc, [...row]],
-        linesCleared,
-      };
-    }
-  }, { acc: [], linesCleared: 0 });
+    const blankRow = rows[0].map(() => ({ ...defaultCell }));
+    const { acc, linesCleared } = [...rows].reduce(
+        ({ acc, linesCleared }, row) => {
+            if (
+                row.every(
+                    (column) =>
+                        column.occupied && row[0].className != "indestructible"
+                )
+            ) {
+                return {
+                    acc: [...acc],
+                    linesCleared: linesCleared + 1,
+                };
+            } else {
+                return {
+                    acc: [...acc, [...row]],
+                    linesCleared,
+                };
+            }
+        },
+        { acc: [], linesCleared: 0 }
+    );
 
-  const BlankRows = Array(linesCleared).fill(blankRow);
-  const clearedRows = linesCleared > 0 ? [...BlankRows, ...acc] : [...acc];
+    const BlankRows = Array(linesCleared).fill(blankRow);
+    const clearedRows = linesCleared > 0 ? [...BlankRows, ...acc] : [...acc];
 
-  return { clearedRows, linesCleared };
-}
+    return { clearedRows, linesCleared };
+};
 
 const indestructibleLines = (rows, addIndestructibleLines) => {
-  const indestructibleLine = rows[0].map((_) => ({ ...indestructibleCell }));
-  const reverseRows = [...rows].reverse();
-  const newRows = reverseRows.reduce(({ acc, count }, row) => {
-    if (count < addIndestructibleLines) {
-      return {
-        acc: [...acc, [...indestructibleLine]],
-        count: count + 1,
-      };
-    }
-    return {
-      acc: [...acc, [...row]],
-      count,
-    };
-  },
-    { acc: [], count: rows.filter(row => row[0].className === "indestructible").length }
+    const indestructibleLine = rows[0].map(() => ({ ...indestructibleCell }));
+    const reverseRows = [...rows].reverse();
+    const newRows = reverseRows
+        .reduce(
+            ({ acc, count }, row) => {
+                if (count < addIndestructibleLines) {
+                    return {
+                        acc: [...acc, [...indestructibleLine]],
+                        count: count + 1,
+                    };
+                }
+                return {
+                    acc: [...acc, [...row]],
+                    count,
+                };
+            },
+            {
+                acc: [],
+                count: rows.filter(
+                    (row) => row[0].className === "indestructible"
+                ).length,
+            }
+        )
+        .acc.reverse();
 
-  ).acc.reverse();
+    return newRows;
+};
 
-  return newRows;
-}
-
-
-const updateGhostAndTetromino = (
-  { className,
+const updateGhostAndTetromino = ({
+    className,
     player,
     dropPosition,
     rows,
     tetromino,
-    position
-  }) => {
-  const updateGhost = transferToBoard({
-    className,
-    isOccupied: player.isFastDropping,
-    position: dropPosition,
-    rows,
-    shape: tetromino.shape
-  });
-
-  if (!player.isFastDropping) {
-    const updateTetrominoRows = transferToBoard({
-      className: tetromino.className,
-      isOccupied: player.collided,
-      position,
-      rows: updateGhost,
-      shape: tetromino.shape
+    position,
+}) => {
+    const updateGhost = transferToBoard({
+        className,
+        isOccupied: player.isFastDropping,
+        position: dropPosition,
+        rows,
+        shape: tetromino.shape,
     });
-    return updateTetrominoRows;
-  }
-  return updateGhost;
-}
+
+    if (!player.isFastDropping) {
+        const updateTetrominoRows = transferToBoard({
+            className: tetromino.className,
+            isOccupied: player.collided,
+            position,
+            rows: updateGhost,
+            shape: tetromino.shape,
+        });
+        return updateTetrominoRows;
+    }
+    return updateGhost;
+};

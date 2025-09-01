@@ -17,10 +17,18 @@ export const useUserData = ({ room, name } = {}) => {
         const socket = socketRef.current;
 
         const handleConnect = () => {
-            console.log("[socket] connected id:", socketRef.current.id)
+            console.log("[socket] connected id:", socketRef.current.id);
             setIsConnected(true);
             setError(null);
-            if (room && name) socket.emit("joinRoom", { room, name });
+            if (room && name) {
+                console.log(
+                    "trying to join room",
+                    room,
+                    "with player name",
+                    name
+                );
+                socket.emit("joinRoom", { room, name });
+            }
         };
         const handleDisconnect = () => setIsConnected(false);
         const handleConnectError = (err) => {

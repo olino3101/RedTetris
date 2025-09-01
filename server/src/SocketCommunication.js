@@ -1,5 +1,18 @@
 import { Server } from "socket.io";
 import { CORS_ORIGIN } from "./env.js";
+import Game from "./Game.js";
+
+/**
+ * Socket events:
+ *  - connection
+ *  - ON    joinRoom
+ *  - ON    startCountdown
+ *  - ON    getNextTetromino
+ *  - EMIT  gameAlreadyStarted: { message: "The game has already started !" }
+ *  - EMIT  playersUpdate: { players: ["player name", ...] }
+ *  - EMIT  roomCounter: { timeLeft: 10 }
+ *  - EMIT  gameStart
+ */
 
 export default class SocketCommunication {
     constructor(server) {
@@ -8,10 +21,12 @@ export default class SocketCommunication {
             // so backend must expose /socket.io (NOT /api/socket.io).
             path: "/socket.io",
             cors: {
-                origin: CORS_ORIGIN,
+                origin: true,
                 methods: ["GET", "POST"],
             },
         });
+
+        this.gameMap = new Map();
 
         this.io.on("connection", (socket) => {
             console.log("[socket] connected:", socket.id);
@@ -19,18 +34,61 @@ export default class SocketCommunication {
             // Basic handshake
             socket.emit("welcome", { message: "Welcome to RedTetris server" });
 
-            // Debug echo
-            socket.on("echo", (data) => {
-                socket.emit("echo", data);
+            socket.on("joinRoom", (data) => {
+                // Data should be { room, name }
+                console.log("Someone is joining a room with data:", data);
+                if (!data || !data.room || !data.name) return;
+                socket.join(data.room);
+
+                let game = this.gameMap.get(data.room);
+                if (!game) {
+                    game = new Game();
+                    this.gameMap.set(data.room, game);
+                    console.log("New game created with id:", data.room);
+                }
+                if (game.started) {
+                    socket.emit("gameAlreadyStarted", {
+                        message: "The game has already started !",
+                    });
+                    return;
+                }
+                if (!game.hasPlayerName(data.name)) {
+                    game.addPlayer(socket.id, data.name);
+                }
+
+                // Broadcast updated player list (names only)
+                this.io.to(data.room).emit("playersUpdate", {
+                    players: game.players.map((p) => p.name),
+                });
+
+                if (!game.started && game.countdownInterval) {
+                    // Send current counter to the new player
+                    socket.emit("roomCounter", { timeLeft: game.timeLeft });
+                }
             });
 
-            socket.on("ping", (data) => {
-                socket.emit("pong", data ?? { t: Date.now() });
+            socket.on("startCountdown", (data) => {
+                const game = this.gameMap.get(data.room);
+                if (!game) {
+                    return;
+                }
+                game.startCountdown(this.io, data.room, 3);
             });
 
-            // socket.on("getNextTetrominoes", () => {});
+            socket.on("getNextTetrominoes", (data, ack) => {
+                const game = this.gameMap.get(data.room);
+                if (!game) return;
+                const player = game.getPlayerBySocketId(data.socketId);
+                if (!player) return;
+                const key = game.tetrominoes.getNextTetromino(
+                    player.tetrominoIndex
+                );
+                player.tetrominoIndex += 1; // advance player's pointer
+                ack({ key });
+            });
 
             socket.on("disconnect", (reason) => {
+                removePlayerInGamesBySocketId(this.gameMap, socket.id);
                 console.log("[socket] disconnected:", socket.id, reason);
             });
         });
@@ -43,4 +101,15 @@ export default class SocketCommunication {
             console.log("Closing sockets.");
         });
     }
+}
+
+function removePlayerInGamesBySocketId(games, socketId) {
+    games.forEach((game, room) => {
+        game.removePlayerSocketId(socketId);
+        // If room becomes empty, clean it
+        if (game.players.length === 0) {
+            game.cancelCountdown();
+            games.delete(room);
+        }
+    });
 }

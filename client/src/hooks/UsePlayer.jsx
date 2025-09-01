@@ -1,22 +1,30 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react";
+import { getNextTetromino } from "./UseServer";
 
-import { getNextTetromino } from "./UseServer"
-
-const buildPlayer = (previous) => {
+const buildPlayer = async (socket, room) => {
+    const tetromino = await getNextTetromino(socket, room);
     return {
         collided: false,
         isFastDropping: false,
         position: { row: 0, column: 4 },
-        tetromino: getNextTetromino()
+        tetromino,
     };
 };
 
-export const usePlayer = () => {
+export const usePlayer = (socket, room) => {
+    const [player, setPlayer] = useState(null); // Start with null while loading
 
-    const [player, setPlayer] = useState(buildPlayer());
+    const resetPlayer = useCallback(async () => {
+        const newPlayer = await buildPlayer(socket, room);
+        setPlayer(newPlayer);
+    }, [socket, room]);
 
-    const resetPlayer = useCallback(() => {
-        setPlayer((prev) => buildPlayer(prev));
-    }, []);
+    // Initialize player on mount
+    useEffect(() => {
+        if (socket && room) {
+            resetPlayer();
+        }
+    }, [socket, room, resetPlayer]);
+
     return [player, setPlayer, resetPlayer];
-}
+};

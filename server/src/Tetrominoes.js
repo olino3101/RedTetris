@@ -1,85 +1,42 @@
-// have an historic of the next piece that will happens (also copy past from the client tetromino.js all the tetrominoes)
+// keep only an history (sequence) of tetromino KEYS ("I","O",...) rather than full shapes
+// so we can just send the key to clients (they already know the shapes)
 
-// get random piece (also tetrominoes.jsx)
+const PIECE_KEYS = ["I", "O", "T", "S", "Z", "J", "L"]; // standard 7-bag could be implemented later
 
 export default class Tetrominoes {
     constructor() {
-        this.tetrominoes = [this.randomTetromino()];
+        // sequence of keys
+        this.tetrominoKeys = [this.randomKey()];
     }
 
-    addRandomTetromino() {
-        this.tetrominoes.push(this.randomTetromino);
+    randomKey() {
+        const index = Math.floor(Math.random() * PIECE_KEYS.length);
+        return PIECE_KEYS[index];
     }
 
-    randomTetromino() {
-        const keys = Object.keys(TETROMINOES);
-        const index = Math.floor(Math.random() * keys.length);
-        const key = keys[index];
-        return TETROMINOES[key];
+    addRandomKey() {
+        this.tetrominoKeys.push(this.randomKey());
     }
 
+    // ensure we have generated up to (and including) index i
+    ensureIndex(i) {
+        while (i >= this.tetrominoKeys.length) {
+            this.addRandomKey();
+        }
+    }
+
+    // get key at index i (generate if needed)
     getNextTetromino(i) {
-        if (i >= tetrominoes.length)
-            this.addRandomTetromino();
-        return this.tetrominoes[i];
+        this.ensureIndex(i);
+        return this.tetrominoKeys[i];
+    }
+
+    // get a batch of upcoming keys
+    getNextBatch(startIndex, count) {
+        const keys = [];
+        for (let i = 0; i < count; i++) {
+            keys.push(this.getNextTetromino(startIndex + i));
+        }
+        return keys;
     }
 }
-
-const TETROMINOES = {
-    I: {
-        shape: [
-            [0, 1, 0, 0],
-            [0, 1, 0, 0],
-            [0, 1, 0, 0],
-            [0, 1, 0, 0]
-        ],
-        className: `${className} ${className}__i`
-    },
-    O: {
-        shape: [
-            [1, 1],
-            [1, 1]
-        ],
-        className: `${className} ${className}__o`
-    },
-    T: {
-        shape: [
-            [0, 1, 0],
-            [1, 1, 1],
-            [0, 0, 0]
-        ],
-        className: `${className} ${className}__t`
-    },
-    S: {
-        shape: [
-            [0, 1, 1],
-            [1, 1, 0],
-            [0, 0, 0]
-        ],
-        className: `${className} ${className}__s`
-    },
-    Z: {
-        shape: [
-            [1, 1, 0],
-            [0, 1, 1],
-            [0, 0, 0]
-        ],
-        className: `${className} ${className}__z`
-    },
-    J: {
-        shape: [
-            [0, 1, 0],
-            [0, 1, 0],
-            [1, 1, 0]
-        ],
-        className: `${className} ${className}__j`
-    },
-    L: {
-        shape: [
-            [0, 1, 0],
-            [0, 1, 0],
-            [0, 1, 1]
-        ],
-        className: `${className} ${className}__l`
-    }
-};
