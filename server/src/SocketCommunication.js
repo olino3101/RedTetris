@@ -75,7 +75,7 @@ export default class SocketCommunication {
                     return;
                 }
                 const player = game.getPlayerBySocketId(socket.id);
-                if (player.isHost) {
+                if (player && player.isHost) {
                     game.startCountdown(this.io, data.room, 3);
                     ack({ message: "Countdown started." });
                 } else {
@@ -103,10 +103,10 @@ export default class SocketCommunication {
                     game.setNewHostInGame(player);
                 }
                 removePlayerInGamesBySocketId(this.gameMap, socket.id);
-                if (game.players.length <= 0) {
+                if (game && game.players.length <= 1) {
                     console.log("Deleting game:", game.room);
                     this.gameMap.delete(game.room);
-                    console.log("New game map:", this.gameMap)
+                    console.log("New game map:", this.gameMap);
                 }
                 console.log("[socket] disconnected:", socket.id, reason);
             });
@@ -134,6 +134,7 @@ function getPlayerInGamesMap(games, socketId) {
 }
 
 function removePlayerInGamesBySocketId(games, socketId) {
+    if (!games) return;
     games.forEach((game, room) => {
         game.removePlayerSocketId(socketId);
         // If room becomes empty, clean it
