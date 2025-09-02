@@ -45,14 +45,14 @@ export default class Game {
     }
 
     // start the countdown, providing io + room so we can emit updates
-    startCountdown(io, room, durationSeconds = 3) {
+    startCountdown(io, room, durationSeconds = 1) {
         if (this.countdownInterval) return; // already running
         this.timeLeft = durationSeconds;
         this.started = false;
         io.to(room).emit("roomCounter", { timeLeft: this.timeLeft });
         console.log("Starting countdown for room:", room);
         this.countdownInterval = setInterval(() => {
-            this.timeLeft -= 1;
+            this.timeLeft -= 3;
             if (this.timeLeft > 0) {
                 io.to(room).emit("roomCounter", { timeLeft: this.timeLeft });
             } else {

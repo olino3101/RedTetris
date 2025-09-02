@@ -72,7 +72,7 @@ export default class SocketCommunication {
                 if (!game) {
                     return;
                 }
-                game.startCountdown(this.io, data.room, 3);
+                game.startCountdown(this.io, data.room, 1);
             });
 
             socket.on("getNextTetrominoes", (data, ack) => {
@@ -85,6 +85,14 @@ export default class SocketCommunication {
                 );
                 player.tetrominoIndex += 1; // advance player's pointer
                 ack({ key });
+            });
+
+            socket.on("sendBoard", (data) => {
+                const game = this.gameMap.get(data.room);
+                const board = data.board;
+                if (!game) return;
+                const name = this.gameMap.get(data.room).getPlayerBySocketId(socket.id)?.name;
+                socket.to(data.room).emit("BoardOpponents", { board, name });
             });
 
             socket.on("disconnect", (reason) => {

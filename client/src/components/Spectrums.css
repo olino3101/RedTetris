@@ -38,8 +38,6 @@
     grid-template-columns: repeat(var(--cols), 1fr);
     grid-template-rows: repeat(var(--rows), 1fr);
 
-    /* tighter chrome so the content area stays for cells */
-    /* padding: 3px; */
     gap: 2px;
     border-radius: 10px;
     border: 2px solid #ffb3ba;

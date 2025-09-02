@@ -8,34 +8,11 @@ import { buildBoard } from "/src/utils/Board";
 
 import BoardCell from "/src/components/BoardCell";
 
-const Spectrum = ({ player, index }) => {
-    const board = buildBoard({ rows: 20, columns: 10 });
-
-    const style = {
-        top: `${index * 15}vw`
+const Spectrum = ({ board, name }) => {
+    if (!board) {
+        return <div className="Spectrum no-board">No board data</div>;
     }
-
-    // board.rows = transferToBoard({
-    //     className,
-    //     isOccupied: false,
-    //     position: { row: 0, column: 0 },
-    //     rows: board.rows,
-    //     shape
-    // });
-
-
-    return (
-        // <div className="Spectrum" style={style}>
-        //     <div className="Spectrum-board">
-        //         {board}
-        //     </div>
-        // </div>
-        <BoardSpectrum board={player} name="George" />
-    );
-}
-
-const BoardSpectrum = ({ board, name }) => {
-
+    console.log(board);
     const boardStyles = {
         gridTemplateRows: `repeat(${board.size.rows}, 1fr)`,
         gridTemplateColumns: `repeat(${board.size.columns}, 1fr)`,
@@ -49,12 +26,11 @@ const BoardSpectrum = ({ board, name }) => {
                     ))
                 )}
             </div>
-            <div className="Spectrum-name">name</div>
+            <div className="Spectrum-name">{name}</div>
         </div>
 
 
     );
-};
-
+}
 
 export default React.memo(Spectrum);
