@@ -1,23 +1,23 @@
 import "./GameController.css";
 
-import { Action, actionForKey, actionIsDrop } from "/src/utils/Input"
-import { playerController } from "/src/utils/PlayerController"
+import { Action, actionForKey, actionIsDrop } from "/src/utils/Input";
+import { playerController } from "/src/utils/PlayerController";
 
-import { useInterval } from "/src/hooks/UseInterval"
-import { useDropTime } from "/src/hooks/UseDropTime"
-
+import { useInterval } from "/src/hooks/UseInterval";
+import { useDropTime } from "/src/hooks/UseDropTime";
 
 const GameController = ({
     board,
     gameStats,
     player,
     setGameOver,
-    setPlayer
+    socket,
+    room,
+    setPlayer,
 }) => {
     const [dropTime, pauseDropTime, resumeDropTime, DropTime] = useDropTime({
-        gameStats
+        gameStats,
     });
-
 
     useInterval(() => {
         handleInput({ action: Action.SlowDrop });
@@ -29,7 +29,7 @@ const GameController = ({
     };
 
     const onKeyDown = ({ code }) => {
-        const action = actionForKey(code)
+        const action = actionForKey(code);
 
         if (action === Action.Pause) {
             if (dropTime) {
@@ -39,6 +39,7 @@ const GameController = ({
             }
         } else if (action == Action.Quit) {
             setGameOver(true);
+            socket.emit("gameLost", { room });
         } else {
             if (actionIsDrop(action)) pauseDropTime();
             handleInput({ action });
@@ -51,10 +52,11 @@ const GameController = ({
             board,
             player,
             setPlayer,
-            setGameOver
+            setGameOver,
+            room,
+            socket
         });
     };
-
 
     return (
         <input
@@ -65,6 +67,6 @@ const GameController = ({
             autoFocus
         />
     );
-}
+};
 
 export default GameController;

@@ -22,6 +22,9 @@ const Game = ({ room, socket }) => {
             setGameOver(true);
             setErrorMessage("The game in this room has already started !");
         });
+        socket.on("endOfGame", () => {
+            setGameOver(true);
+        })
     }, [socket, setGameOver, gameOver]);
 
     return (

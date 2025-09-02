@@ -59,7 +59,9 @@ const attemptMovement = ({
     action,
     player,
     setPlayer,
-    setGameOver
+    setGameOver,
+    room,
+    socket
 }) => {
     const delta = { row: 0, column: 0 };
     let isFastDropping = false;
@@ -84,6 +86,8 @@ const attemptMovement = ({
     const isGameOver = collided && player.position.row === 0;
     if (isGameOver) {
         setGameOver(isGameOver);
+        socket.emit("gameLost", { room });
+        console.log("Game lost...");
     }
 
     setPlayer({
@@ -100,7 +104,9 @@ export const playerController = ({
     board,
     player,
     setPlayer,
-    setGameOver
+    setGameOver,
+    room,
+    socket
 }) => {
 
     if (!action) return;
@@ -108,6 +114,6 @@ export const playerController = ({
     if (action === Action.Rotate) {
         attemptRotation({ board, player, setPlayer });
     } else {
-        attemptMovement({ board, player, setPlayer, action, setGameOver });
+        attemptMovement({ board, player, setPlayer, action, setGameOver, room, socket });
     }
 };
