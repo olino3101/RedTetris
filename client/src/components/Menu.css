@@ -11,9 +11,9 @@
     padding: 20px 40px;
     font-size: 1.5rem;
     border-radius: 10px;
-    border: 2px solid #fff;
-    background: transparent;
-    color: #fff;
+    border: 2px solid #36deff;
+    background: #ffffff;
+    color: #36deff;
     cursor: pointer;
     margin: 10px;
     transition: all 0.2s ease;
@@ -21,5 +21,6 @@
 
 .Button:hover {
     background: #fff;
-    color: #000;
+    color: #24a5be;
+    border: 2px solid #24a5be;
 }

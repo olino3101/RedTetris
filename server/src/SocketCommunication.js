@@ -80,10 +80,7 @@ export default class SocketCommunication {
                 if (!game) return;
                 const player = game.getPlayerBySocketId(data.socketId);
                 if (!player) return;
-                const key = game.tetrominoes.getNextTetromino(
-                    player.tetrominoIndex
-                );
-                player.tetrominoIndex += 1; // advance player's pointer
+                const key = player.getNextTetromino();
                 ack({ key });
             });
 
