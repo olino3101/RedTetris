@@ -5,7 +5,8 @@ import Tetrominoes from "./Tetrominoes.js";
 // wait to see when the game starts
 
 export default class Game {
-    constructor() {
+    constructor(room) {
+        this.room = room;
         this.players = [];
         this.tetrominoes = new Tetrominoes();
         // countdown before the game actually starts (in seconds)
@@ -15,8 +16,8 @@ export default class Game {
     }
 
     // add a player that connects themself
-    addPlayer(socketId, name) {
-        this.players.push(new Player(socketId, name, this));
+    addPlayer(socketId, name, isHost = false) {
+        this.players.push(new Player(socketId, name, this, isHost));
         console.log(
             "New player list:",
             this.players.map((p) => p.name)
@@ -32,16 +33,34 @@ export default class Game {
     }
 
     removePlayerSocketId(socketId) {
-        this.players.forEach((player, index) => {
-            if (player.socketId === socketId) {
-                this.players.splice(index, 1);
-                console.log("Removed player", player.name);
-                console.log(
-                    "New player list:",
-                    this.players.map((p) => p.name)
-                );
-            }
-        });
+        const playerIndex = this.players.findIndex(
+            (player) => player.socketId == socketId
+        );
+        if (playerIndex !== -1) {
+            console.log("Removing player", this.players[playerIndex].name);
+            this.players.splice(playerIndex, 1);
+            console.log(
+                "New player list:",
+                this.players.map((p) => p.name)
+            );
+            return;
+        }
+    }
+
+    setNewHostInGame(exceptPlayer) {
+        console.log("Setting a new host...");
+
+        const newHost = this.players.find((player) => player !== exceptPlayer);
+
+        if (newHost) {
+            newHost.isHost = true;
+            console.log("New host for the game", this.room, "is", newHost.name);
+        } else {
+            console.log(
+                "No available player to set as host in room",
+                this.room
+            );
+        }
     }
 
     // start the countdown, providing io + room so we can emit updates

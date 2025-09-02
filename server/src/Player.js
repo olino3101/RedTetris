@@ -4,9 +4,10 @@
 // maybe call a function from game that will loop into every player and call the function to add an invicible line
 
 export default class Player {
-    constructor(socketId, name, currentGame) {
+    constructor(socketId, name, currentGame, isHost = false) {
         this.socketId = socketId;
         this.name = name;
+        this.isHost = isHost;
         this.currentGame = currentGame;
         this.tetrominoIndex = 0;
     }

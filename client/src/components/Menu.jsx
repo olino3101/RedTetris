@@ -66,7 +66,7 @@ const Menu = ({ onClick, socket }) => {
                 Play Tetris
             </button>
             {timeLeft !== null && <h1>{timeLeft}</h1>}
-            <h2>{styledPlayersList(playersList)}</h2>
+            {styledPlayersList(playersList)}
         </div>
     );
 };
