@@ -12,14 +12,6 @@ export default class Player {
         this.tetrominoIndex = 0;
     }
 
-    // when you complete lines you get punish
-    completeLines(linesToPunish) {
-        this.currentGame.punishOthers(this, linesToPunish);
-    }
-
-    // when somebody else finish lines you get punish
-    getPunish(linesToPunish) {}
-
     // used to get the next tetromino key that they are at
     getNextTetromino() {
         const key = this.currentGame.tetrominoes.getNextTetromino(

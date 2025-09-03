@@ -5,7 +5,8 @@ export const Action = {
     Quit: "Quit",
     Right: "Right",
     Rotate: "Rotate",
-    SlowDrop: "SlowDrop"
+    SlowDrop: "SlowDrop",
+    ExtraFrame: "ExtraFrame"
 }
 
 export const Key = {
@@ -14,7 +15,6 @@ export const Key = {
     ArrowLeft: Action.Left,
     ArrowRight: Action.Right,
     KeyQ: Action.Quit,
-    KeyP: Action.Pause,
     Space: Action.FastDrop
 }
 

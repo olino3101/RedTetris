@@ -2,32 +2,17 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Spectrum from '../src/components/Spectrum';
 
-// Mock the buildBoard utility
-// jest.mock('../src/utils/Board', () => ({
-//   buildBoard: jest.fn()
-// }));
+describe('Spectrum', () => {
+    const defaultProps = {
+        player: { rows: [[{ occupied: false, className: '' }]] },
+        index: 1
+    };
 
-// const mockBuildBoard = require('../src/utils/Board').buildBoard;
-
-// describe('Spectrum', () => {
-//   const defaultProps = {
-//     player: 1,
-//     index: 2
-//   };
-
-// const mockBoard = {
-//   size: { rows: 20, columns: 10 },
-//   rows: Array(20).fill(Array(10).fill({ occupied: false, className: '' }))
-// };
-
-// beforeEach(() => {
-//   jest.clearAllMocks();
-//   mockBuildBoard.mockReturnValue(mockBoard);
-// });
-
-// it('renders without crashing', () => {
-//   render(<Spectrum {...defaultProps} />);
-// });
+    it('renders without crashing', () => {
+        render(<Spectrum {...defaultProps} />);
+        expect(true).toBe(true); // Basic test to ensure no errors
+    });
+});
 
 // it('renders with correct CSS classes', () => {
 //   render(<Spectrum {...defaultProps} />);

@@ -1,8 +1,8 @@
 .Board {
     --cols: 10;
     --rows: 20;
-    --gap: 5px;
-    --padding: 18px;
+    --gap: 2px;
+    --padding: 15px;
 
     margin: 2em auto;
     display: grid;
@@ -11,19 +11,78 @@
     width: min(90vw, 420px);
     aspect-ratio: var(--cols) / var(--rows);
 
-    background: linear-gradient(135deg, #fff6e7 60%, #ffe6fa 100%);
-    border: 6px solid #ffb3ba;
-    border-radius: 28px;
-    box-shadow: 0 8px 32px #ffb3ba55, 0 0 0 8px #fff6e7 inset;
+    background:
+        linear-gradient(45deg, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at center, rgba(0, 100, 200, 0.3) 0%, rgba(10, 10, 30, 0.9) 100%);
+    border: 3px solid rgba(0, 255, 255, 0.6);
+    border-radius: 15px;
+    box-shadow:
+        0 0 30px rgba(0, 255, 255, 0.4),
+        0 0 60px rgba(255, 0, 255, 0.2),
+        inset 0 0 20px rgba(0, 0, 0, 0.3);
     grid-template-columns: repeat(var(--cols),
             calc((100% - 2 * var(--padding) - (var(--cols) - 1) * var(--gap)) / var(--cols)));
     grid-template-rows: repeat(var(--rows),
             calc((100% - 2 * var(--padding) - (var(--rows) - 1) * var(--gap)) / var(--rows)));
-    transition: box-shadow 0.3s;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.Board::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.1) 50%, transparent 100%);
+    animation: scan-line 4s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.Board>div {
+    position: relative;
+    z-index: 2;
 }
 
 .Board>div:hover {
-    transform: scale(1.07) rotate(-2deg);
-    box-shadow: 0 0 16px #ffb3ba99;
-    transition: transform 0.1s, box-shadow 0.1s;
+    transform: scale(1.05);
+    box-shadow:
+        0 0 15px rgba(0, 255, 255, 0.6),
+        0 0 25px rgba(255, 0, 255, 0.3);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+@keyframes scan-line {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .Board {
+        --gap: 1px;
+        --padding: 12px;
+        width: min(95vw, 350px);
+        border-width: 2px;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .Board {
+        --gap: 1px;
+        --padding: 10px;
+        width: min(98vw, 300px);
+        margin: 1em auto;
+    }
 }

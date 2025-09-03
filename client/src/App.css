@@ -5,12 +5,16 @@
   box-sizing: border-box;
 }
 
-/* ---------- App Container ---------- */
+/* ---------- App Container - Space Theme ---------- */
 .App {
-  font-family: 'Fredoka One', 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+  font-family: 'Orbitron', 'Exo 2', 'Rajdhani', 'Space Mono', monospace;
   text-align: center;
-  color: #ff7eb9;
-  background: linear-gradient(135deg, #ffe6fa 0%, #c1f7fa 100%);
+  color: #00ffff;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #0c0c1e 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0c0c1e 100%);
   min-height: 100vh;
   position: relative;
   padding: 20px;
@@ -19,59 +23,106 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  animation: cosmic-pulse 8s ease-in-out infinite alternate;
 }
 
-/* Floating pastel bubbles */
+/* Cosmic particles and stars */
 .App::before,
 .App::after {
   content: '';
   position: absolute;
-  border-radius: 50%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.25;
-  filter: blur(2px);
+  opacity: 0.7;
 }
 
 .App::before {
-  width: 400px;
-  height: 400px;
-  left: -120px;
-  top: -120px;
-  background: radial-gradient(circle, #ffb3ba 60%, transparent 100%);
-  animation: float1 12s ease-in-out infinite alternate;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #ffffff, transparent),
+    radial-gradient(2px 2px at 40px 70px, #00ffff, transparent),
+    radial-gradient(1px 1px at 90px 40px, #ff00ff, transparent),
+    radial-gradient(1px 1px at 130px 80px, #ffffff, transparent),
+    radial-gradient(2px 2px at 160px 30px, #00ff00, transparent),
+    radial-gradient(1px 1px at 200px 90px, #ffff00, transparent),
+    radial-gradient(2px 2px at 240px 50px, #ff6600, transparent),
+    radial-gradient(1px 1px at 280px 10px, #ffffff, transparent);
+  background-repeat: repeat;
+  background-size: 300px 150px;
+  animation: starfield 30s linear infinite;
 }
 
 .App::after {
-  width: 300px;
-  height: 300px;
-  right: -80px;
-  bottom: -80px;
-  background: radial-gradient(circle, #bae1ff 60%, transparent 100%);
-  animation: float2 14s ease-in-out infinite alternate;
+  width: 200px;
+  height: 200px;
+  right: 10%;
+  top: 20%;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, rgba(255, 0, 255, 0.2) 50%, transparent 100%);
+  border-radius: 50%;
+  filter: blur(3px);
+  animation: cosmic-drift 20s ease-in-out infinite alternate;
 }
 
-@keyframes float1 {
+@keyframes cosmic-pulse {
   0% {
-    transform: translateY(0);
+    filter: brightness(1) contrast(1);
   }
 
   100% {
-    transform: translateY(40px);
+    filter: brightness(1.1) contrast(1.05);
   }
 }
 
-@keyframes float2 {
+@keyframes starfield {
   0% {
-    transform: translateY(0);
+    transform: translateY(0) translateX(0);
   }
 
   100% {
-    transform: translateY(-40px);
+    transform: translateY(-300px) translateX(-150px);
+  }
+}
+
+@keyframes cosmic-drift {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateY(-50px) translateX(30px) scale(1.2);
+    opacity: 0.3;
   }
 }
 
 .App>* {
   position: relative;
   z-index: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .App {
+    padding: 10px;
+    background-size: 200px 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .App {
+    padding: 5px;
+    font-size: 0.9em;
+  }
+
+  .App::after {
+    width: 150px;
+    height: 150px;
+  }
 }

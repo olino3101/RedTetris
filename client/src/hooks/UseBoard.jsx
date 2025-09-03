@@ -8,9 +8,10 @@ export const useBoard = ({
     resetPlayer,
     addLinesCleared,
     addIndestructibleLines,
+    socket,
+    room,
 }) => {
     const [board, setBoard] = useState(buildBoard({ rows, columns }));
-
     useEffect(() => {
         // Only update board if player is loaded
         if (player) {
@@ -21,6 +22,8 @@ export const useBoard = ({
                     resetPlayer,
                     addLinesCleared,
                     addIndestructibleLines,
+                    socket,
+                    room,
                 })
             );
         }

@@ -91,10 +91,4 @@ export default class Game {
         }
     }
 
-    // loop on all the player and punish them except the punisher
-    punishOthers(punisher, linesToPunish) {
-        this.players.forEach((player) => {
-            if (player.name != punisher) player.getPunish(linesToPunish);
-        });
-    }
 }

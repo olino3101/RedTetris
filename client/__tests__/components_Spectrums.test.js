@@ -4,164 +4,65 @@ import Spectrums from '../src/components/Spectrums';
 
 // Mock the Spectrum component
 jest.mock('../src/components/Spectrum', () => {
-  return function MockSpectrum({ index }) {
-    return <div data-testid={`spectrum-${index}`}>Spectrum {index}</div>;
+  return function MockSpectrum({ board, name }) {
+    return <div data-testid={`spectrum-${name}`}>Mock Spectrum: {name}</div>;
   };
 });
 
 describe('Spectrums', () => {
-  const defaultPlayers = {
-    size: { rows: 20, columns: 10 },
-    rows: Array(20).fill(Array(10).fill({ occupied: false, className: '' }))
-  };
+  const defaultOpponents = new Map([
+    ['player1', { rows: [[{ occupied: false, className: '' }]] }],
+    ['player2', { rows: [[{ occupied: true, className: 'test' }]] }],
+    ['player3', { rows: [[{ occupied: false, className: '' }]] }]
+  ]);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('renders without crashing', () => {
-    render(<Spectrums players={defaultPlayers} />);
+    render(<Spectrums opponents={defaultOpponents} />);
   });
 
-  // it('renders three Spectrum components', () => {
-  //   render(<Spectrums players={defaultPlayers} />);
-
-  //   expect(screen.getByTestId('spectrum-0')).toBeInTheDocument();
-  //   expect(screen.getByTestId('spectrum-1')).toBeInTheDocument();
-  //   expect(screen.getByTestId('spectrum-2')).toBeInTheDocument();
-  // });
-
-  it('renders Spectrum components with correct props', () => {
-    render(<Spectrums players={defaultPlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
-
-    // // All should have player=1 and index=2 as hardcoded in the component
-    // spectrums.forEach(spectrum => {
-    //   expect(spectrum.textContent).toContain('Spectrum 1');
-    // });
+  it('renders "No opponents connected" when no opponents', () => {
+    render(<Spectrums opponents={new Map()} />);
+    expect(screen.getByText('No opponents connected')).toBeInTheDocument();
   });
 
-  it('renders Spectrum components with correct keys', () => {
-    render(<Spectrums players={defaultPlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
+  it('renders "No opponents connected" when opponents is null', () => {
+    render(<Spectrums opponents={null} />);
+    expect(screen.getByText('No opponents connected')).toBeInTheDocument();
   });
 
-  it('renders with different players data', () => {
-    const customPlayers = {
-      size: { rows: 15, columns: 8 },
-      rows: Array(15).fill(Array(8).fill({ occupied: true, className: 'test' }))
-    };
-
-    render(<Spectrums players={customPlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
+  it('renders "No opponents connected" when opponents is undefined', () => {
+    render(<Spectrums opponents={undefined} />);
+    expect(screen.getByText('No opponents connected')).toBeInTheDocument();
   });
 
-  it('renders with empty players data', () => {
-    const emptyPlayers = {
-      size: { rows: 0, columns: 0 },
-      rows: []
-    };
+  it('renders Spectrum components for each opponent', () => {
+    render(<Spectrums opponents={defaultOpponents} />);
 
-    render(<Spectrums players={emptyPlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
+    expect(screen.getByTestId('spectrum-player1')).toBeInTheDocument();
+    expect(screen.getByTestId('spectrum-player2')).toBeInTheDocument();
+    expect(screen.getByTestId('spectrum-player3')).toBeInTheDocument();
   });
 
-  it('renders with undefined players prop', () => {
-    render(<Spectrums players={undefined} />);
+  it('passes correct props to Spectrum components', () => {
+    render(<Spectrums opponents={defaultOpponents} />);
 
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
+    expect(screen.getByText('Mock Spectrum: player1')).toBeInTheDocument();
+    expect(screen.getByText('Mock Spectrum: player2')).toBeInTheDocument();
+    expect(screen.getByText('Mock Spectrum: player3')).toBeInTheDocument();
   });
 
-  it('renders with null players prop', () => {
-    render(<Spectrums players={null} />);
+  it('handles single opponent', () => {
+    const singleOpponent = new Map([
+      ['player1', { rows: [[{ occupied: false, className: '' }]] }]
+    ]);
 
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
-  });
+    render(<Spectrums opponents={singleOpponent} />);
 
-  it('renders with missing players prop', () => {
-    render(<Spectrums />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
-  });
-
-  it('renders with complex players data structure', () => {
-    const complexPlayers = {
-      size: { rows: 25, columns: 12 },
-      rows: Array(25).fill(null).map((_, rowIndex) =>
-        Array(12).fill(null).map((_, colIndex) => ({
-          occupied: (rowIndex + colIndex) % 2 === 0,
-          className: `cell-${rowIndex}-${colIndex}`
-        }))
-      )
-    };
-
-    render(<Spectrums players={complexPlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
-  });
-
-  it('renders with single row players data', () => {
-    const singleRowPlayers = {
-      size: { rows: 1, columns: 10 },
-      rows: [Array(10).fill({ occupied: false, className: '' })]
-    };
-
-    render(<Spectrums players={singleRowPlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
-  });
-
-  it('renders with single column players data', () => {
-    const singleColPlayers = {
-      size: { rows: 20, columns: 1 },
-      rows: Array(20).fill([{ occupied: false, className: '' }])
-    };
-
-    render(<Spectrums players={singleColPlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
-  });
-
-  it('renders with very large players data', () => {
-    const largePlayers = {
-      size: { rows: 100, columns: 50 },
-      rows: Array(100).fill(Array(50).fill({ occupied: false, className: '' }))
-    };
-
-    render(<Spectrums players={largePlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
-  });
-
-  it('renders with players data containing special characters in className', () => {
-    const specialPlayers = {
-      size: { rows: 2, columns: 2 },
-      rows: [
-        [
-          { occupied: true, className: 'tetromino__i ghost' },
-          { occupied: false, className: '' }
-        ],
-        [
-          { occupied: true, className: 'indestructible' },
-          { occupied: true, className: 'tetromino__o__active' }
-        ]
-      ]
-    };
-
-    render(<Spectrums players={specialPlayers} />);
-
-    const spectrums = screen.getAllByTestId(/spectrum-/);
-    expect(spectrums).toHaveLength(3);
+    expect(screen.getByTestId('spectrum-player1')).toBeInTheDocument();
+    expect(screen.queryByText('No opponents connected')).not.toBeInTheDocument();
   });
 });

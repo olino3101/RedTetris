@@ -11,23 +11,59 @@ jest.mock('../src/hooks/UsePlayer', () => ({
   usePlayer: jest.fn()
 }));
 
-jest.mock('../src/hooks/UseServer', () => ({
-  useServerData: jest.fn()
-}));
-
 jest.mock('../src/hooks/UseBoard', () => ({
   useBoard: jest.fn()
 }));
 
+jest.mock('../src/hooks/UsePunishLine', () => ({
+  usePunishedLine: jest.fn()
+}));
+
+// Mock utils
+jest.mock('../src/utils/UseServer', () => ({
+  sendBoard: jest.fn(),
+  getOpponentsBoards: jest.fn(() => [])
+}));
+
+// Mock components
+jest.mock('../src/components/Board', () => {
+  return function MockBoard() {
+    return <div className="Board">Mock Board</div>;
+  };
+});
+
+jest.mock('../src/components/GameStats', () => {
+  return function MockGameStats() {
+    return <div className="GameStats">Mock GameStats</div>;
+  };
+});
+
+jest.mock('../src/components/Spectrums', () => {
+  return function MockSpectrums() {
+    return <div className="Spectrums">Mock Spectrums</div>;
+  };
+});
+
+jest.mock('../src/components/GameController', () => {
+  return function MockGameController() {
+    return <div className="GameController">Mock GameController</div>;
+  };
+});
+
 const mockUseGameStats = require('../src/hooks/UseGameStats').useGameStats;
 const mockUsePlayer = require('../src/hooks/UsePlayer').usePlayer;
-const mockUseServerData = require('../src/hooks/UseServer').useServerData;
 const mockUseBoard = require('../src/hooks/UseBoard').useBoard;
+const mockUsePunishedLine = require('../src/hooks/UsePunishLine').usePunishedLine;
 
 describe('Tetris', () => {
   const defaultProps = {
     rows: 20,
     columns: 10,
+    socket: {
+      emit: jest.fn(),
+      on: jest.fn()
+    },
+    room: 'testroom',
     setGameOver: jest.fn()
   };
 
@@ -55,8 +91,8 @@ describe('Tetris', () => {
 
     mockUseGameStats.mockReturnValue([mockGameStats, jest.fn()]);
     mockUsePlayer.mockReturnValue([mockPlayer, jest.fn(), jest.fn()]);
-    mockUseServerData.mockReturnValue([jest.fn(), []]);
-    mockUseBoard.mockReturnValue([mockBoard]);
+    mockUseBoard.mockReturnValue([mockBoard, jest.fn()]);
+    mockUsePunishedLine.mockReturnValue(jest.fn());
   });
 
   it('renders without crashing', () => {
@@ -85,12 +121,6 @@ describe('Tetris', () => {
     expect(mockUsePlayer).toHaveBeenCalledTimes(1);
   });
 
-  it('calls useServerData hook correctly', () => {
-    render(<Tetris {...defaultProps} />);
-
-    expect(mockUseServerData).toHaveBeenCalledTimes(1);
-  });
-
   it('calls useBoard hook with correct parameters', () => {
     render(<Tetris {...defaultProps} />);
 
@@ -100,7 +130,9 @@ describe('Tetris', () => {
       player: mockPlayer,
       resetPlayer: expect.any(Function),
       addLinesCleared: expect.any(Function),
-      addIndestructibleLines: expect.any(Function)
+      addIndestructibleLines: expect.any(Function),
+      socket: defaultProps.socket,
+      room: defaultProps.room
     });
   });
 

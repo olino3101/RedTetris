@@ -1,7 +1,7 @@
 import "./GameController.css";
 
 import { Action, actionForKey, actionIsDrop } from "/src/utils/Input";
-import { playerController } from "/src/utils/PlayerController";
+import { playerController, isGoingToCollided } from "/src/utils/PlayerController";
 
 import { useInterval } from "/src/hooks/UseInterval";
 import { useDropTime } from "/src/hooks/UseDropTime";
@@ -19,9 +19,7 @@ const GameController = ({
         gameStats,
     });
 
-    useInterval(() => {
-        handleInput({ action: Action.SlowDrop });
-    }, dropTime);
+
 
     const onKeyUp = ({ code }) => {
         const action = actionForKey(code);
@@ -31,13 +29,7 @@ const GameController = ({
     const onKeyDown = ({ code }) => {
         const action = actionForKey(code);
 
-        if (action === Action.Pause) {
-            if (dropTime) {
-                pauseDropTime();
-            } else {
-                resumeDropTime();
-            }
-        } else if (action == Action.Quit) {
+        if (action == Action.Quit) {
             setGameOver(true);
             socket.emit("gameLost", { room });
         } else {
@@ -57,6 +49,13 @@ const GameController = ({
             socket
         });
     };
+
+    // check if its going to collided if so add another frame of drop time
+
+    const newdropTime = isGoingToCollided({ board, player }) ? dropTime * 4 : dropTime;
+    useInterval(() => {
+        handleInput({ action: Action.SlowDrop });
+    }, newdropTime);
 
     return (
         <input

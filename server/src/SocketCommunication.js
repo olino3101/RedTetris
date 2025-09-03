@@ -106,6 +106,14 @@ export default class SocketCommunication {
                 socket.to(data.room).emit("BoardOpponents", { board, name });
             });
 
+            socket.on("punishOpponents", (data, ack) => {
+                const game = this.gameMap.get(data.room);
+                if (!game) return;
+                socket.to(data.room).emit("punishFromOpponent", { lines: data.linesToPunish });
+                // ack({ message: "Opponent punished." });
+
+            });
+
             socket.on("gameLost", (data) => {
                 removePlayerInGamesBySocketId(this.gameMap, socket.id);
                 const game = this.gameMap.get(data.room);

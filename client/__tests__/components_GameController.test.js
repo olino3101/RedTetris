@@ -15,13 +15,14 @@ jest.mock('../src/utils/Input', () => ({
 }));
 jest.mock('../src/utils/PlayerController', () => ({
   playerController: jest.fn(),
+  isGoingToCollided: jest.fn(() => false),
 }));
 
 const { actionForKey, actionIsDrop } = require('../src/utils/Input');
-const { playerController } = require('../src/utils/PlayerController');
+const { playerController, isGoingToCollided } = require('../src/utils/PlayerController');
 
 describe('GameController', () => {
-  let setGameOver, setPlayer, board, gameStats, player;
+  let setGameOver, setPlayer, board, gameStats, player, socket, room;
 
   beforeEach(() => {
     setGameOver = jest.fn();
@@ -29,6 +30,8 @@ describe('GameController', () => {
     board = {};
     gameStats = {};
     player = {};
+    socket = { emit: jest.fn() };
+    room = 'testroom';
     jest.clearAllMocks();
   });
 
@@ -40,6 +43,8 @@ describe('GameController', () => {
         player={player}
         setGameOver={setGameOver}
         setPlayer={setPlayer}
+        socket={socket}
+        room={room}
       />
     );
     expect(container.querySelector('input.GameController')).toBeInTheDocument();
@@ -54,6 +59,8 @@ describe('GameController', () => {
         player={player}
         setGameOver={setGameOver}
         setPlayer={setPlayer}
+        socket={socket}
+        room={room}
       />
     );
     fireEvent.keyDown(getByRole('textbox'), { code: 'Pause' });
@@ -69,10 +76,13 @@ describe('GameController', () => {
         player={player}
         setGameOver={setGameOver}
         setPlayer={setPlayer}
+        socket={socket}
+        room={room}
       />
     );
     fireEvent.keyDown(getByRole('textbox'), { code: 'Quit' });
     expect(setGameOver).toHaveBeenCalledWith(true);
+    expect(socket.emit).toHaveBeenCalledWith("gameLost", { room });
   });
 
   it('handles SlowDrop key', () => {
@@ -85,6 +95,8 @@ describe('GameController', () => {
         player={player}
         setGameOver={setGameOver}
         setPlayer={setPlayer}
+        socket={socket}
+        room={room}
       />
     );
     fireEvent.keyDown(getByRole('textbox'), { code: 'SlowDrop' });
@@ -101,6 +113,8 @@ describe('GameController', () => {
         player={player}
         setGameOver={setGameOver}
         setPlayer={setPlayer}
+        socket={socket}
+        room={room}
       />
     );
     fireEvent.keyDown(getByRole('textbox'), { code: 'Left' });

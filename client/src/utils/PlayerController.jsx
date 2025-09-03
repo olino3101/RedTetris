@@ -117,3 +117,10 @@ export const playerController = ({
         attemptMovement({ board, player, setPlayer, action, setGameOver, room, socket });
     }
 };
+
+export const isGoingToCollided = ({ board, player }) => {
+
+    const { tetromino, position } = player;
+    const nextPosition = { row: position.row + 1, column: position.column };
+    return hasCollision({ board, position: nextPosition, shape: tetromino.shape });
+};
