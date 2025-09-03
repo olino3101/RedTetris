@@ -23,8 +23,6 @@ const Spectrum = ({ board, name }) => {
             </div>
             <div className="Spectrum-name">{name}</div>
         </div>
-
-
     );
 }
 

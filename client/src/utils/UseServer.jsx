@@ -19,7 +19,7 @@ export const getNextTetromino = (socket, room) => {
             "getNextTetrominoes",
             { room: room, socketId: socket.id },
             ({ key }) => {
-                const tetromino = TETROMINOES["O"];
+                const tetromino = TETROMINOES[key];
                 resolve(tetromino);
             }
         );
@@ -27,6 +27,5 @@ export const getNextTetromino = (socket, room) => {
 };
 
 export const punishOther = (linesToPunish, socket, room) => {
-    debugger
     socket.emit("punishOpponents", { linesToPunish, room });
 }

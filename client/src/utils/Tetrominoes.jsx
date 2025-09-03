@@ -59,6 +59,7 @@ export const TETROMINOES = {
     }
 };
 
+
 export const transferToBoard = ({
     className,
     isOccupied,
@@ -94,3 +95,5 @@ export const rotate = ({ piece, direction }) => {
 
     return newPiece.reverse();
 }
+
+

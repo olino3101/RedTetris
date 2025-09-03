@@ -35,9 +35,6 @@ const Tetris = ({ rows, columns, socket, room, setGameOver }) => {
 
   return (
     <div className="Tetris">
-      <Board board={board} />
-      <GameStats gameStats={gameStats} />
-      <Spectrums opponents={opponents} />
       <GameController
         board={board}
         gameStats={gameStats}
@@ -47,6 +44,10 @@ const Tetris = ({ rows, columns, socket, room, setGameOver }) => {
         room={room}
         setPlayer={setPlayer}
       />
+      <Board board={board} />
+      <GameStats gameStats={gameStats} />
+      <Spectrums opponents={opponents} />
+
     </div>
   );
 };

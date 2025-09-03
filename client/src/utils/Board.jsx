@@ -82,10 +82,7 @@ export const nextBoard = ({
     if (player.collided || player.isFastDropping) {
         resetPlayer();
     }
-    // if you have indestructible lines to add
-    if (addIndestructibleLines > 0) {
-        console.log("Adding indestructible lines:", addIndestructibleLines);
-    }
+
     // add the rows that are indestructable
     const withIndestrucableRows = indestructibleLines(
         clearedRows,
@@ -155,12 +152,8 @@ const indestructibleLines = (rows, addIndestructibleLines) => {
     const count = rows.filter(
         (row) => row[0].className === "indestructible"
     ).length;
-    //
-    if (addIndestructibleLines === 0 || addIndestructibleLines === count) return [...rows];
 
-    if (addIndestructibleLines > 1) {
-        debugger;
-    }
+    if (addIndestructibleLines === 0 || addIndestructibleLines === count) return [...rows];
     const newRows = reverseRows
         .reduce(
             ({ acc, count }, row) => {
@@ -185,7 +178,6 @@ const indestructibleLines = (rows, addIndestructibleLines) => {
             }
         )
         .acc.reverse();
-    debugger
     return newRows;
 };
 
