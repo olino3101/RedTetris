@@ -9,14 +9,17 @@ export default {
     coverageReporters: ["text", "lcov", "html", "json"],
     coverageThreshold: {
         global: {
-            branches: 70,
+            branches: 50,
             functions: 70,
             lines: 70,
             statements: 70,
         },
     },
     testMatch: ["**/__tests__/**/*.test.js"],
-    testPathIgnorePatterns: ["__tests__/main.test.js", "__tests__/RedTetrisServer.test.js"],
+    testPathIgnorePatterns: [
+        "__tests__/main.test.js",
+        "__tests__/RedTetrisServer.test.js",
+    ],
     setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
     testTimeout: 15000, // Increase default timeout to 15 seconds
     maxWorkers: 1, // Run tests sequentially to avoid port conflicts

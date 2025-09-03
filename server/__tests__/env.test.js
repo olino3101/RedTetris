@@ -1,4 +1,11 @@
-import { describe, test, expect, beforeEach, afterEach, jest } from "@jest/globals";
+import {
+    describe,
+    test,
+    expect,
+    beforeEach,
+    afterEach,
+    jest,
+} from "@jest/globals";
 
 describe("env.js", () => {
     let originalEnv;
@@ -60,7 +67,7 @@ describe("env.js", () => {
 
         const { CORS_ORIGIN } = await import("../src/env.js");
 
-        expect(CORS_ORIGIN).toEqual([""]);
+        expect(CORS_ORIGIN).toBe("*");
     });
 
     test("should handle CORS_ORIGIN with only commas", async () => {

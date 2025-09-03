@@ -39,6 +39,14 @@ describe("Player", () => {
         expect(hostPlayer.name).toBe("HostPlayer");
     });
 
+    test("should use default isHost value when not provided", () => {
+        const defaultPlayer = new Player("socket789", "DefaultPlayer", mockGame);
+
+        expect(defaultPlayer.isHost).toBe(false);
+        expect(defaultPlayer.socketId).toBe("socket789");
+        expect(defaultPlayer.name).toBe("DefaultPlayer");
+    });
+
     test("should call punishOthers when completing lines", () => {
         const linesToPunish = 2;
 
