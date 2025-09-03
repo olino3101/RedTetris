@@ -59,13 +59,6 @@ export const TETROMINOES = {
     }
 };
 
-export const randomTetromino = () => {
-    const keys = Object.keys(TETROMINOES);
-    const index = Math.floor(Math.random() * keys.length);
-    const key = keys[index];
-    return TETROMINOES[key];
-}
-
 export const transferToBoard = ({
     className,
     isOccupied,

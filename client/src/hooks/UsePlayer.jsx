@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { getNextTetromino } from "./UseServer";
+import { getNextTetromino } from "../utils/UseServer";
 
 const buildPlayer = async (socket, room) => {
     const tetromino = await getNextTetromino(socket, room);

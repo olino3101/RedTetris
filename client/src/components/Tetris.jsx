@@ -8,12 +8,12 @@ import GameController from "./GameController";
 import { useBoard } from "/src/hooks/UseBoard";
 import { useGameStats } from "/src/hooks/UseGameStats";
 import { usePlayer } from "/src/hooks/UsePlayer";
-import { useServerData, sendBoard, getOpponentsBoards } from "/src/hooks/UseServer";
-
+import { sendBoard, getOpponentsBoards } from "/src/utils/UseServer";
+import { usePunishedLine } from "../hooks/UsePunishLine";
 const Tetris = ({ rows, columns, socket, room, setGameOver }) => {
   const [gameStats, addLinesCleared] = useGameStats();
   const [player, setPlayer, resetPlayer] = usePlayer(socket, room);
-  const [addIndestructibleLines, players] = useServerData();
+  const addIndestructibleLines = usePunishedLine(socket);
   const opponents = getOpponentsBoards(socket);
   const [board, setBoard] = useBoard({
     rows,
@@ -22,11 +22,13 @@ const Tetris = ({ rows, columns, socket, room, setGameOver }) => {
     resetPlayer,
     addLinesCleared,
     addIndestructibleLines,
+    socket,
+    room,
   });
 
 
   sendBoard(socket, room, board);
-  // Show loading state while player is being initialized
+
   if (!player) {
     return <div className="Tetris loading">Loading...</div>;
   }

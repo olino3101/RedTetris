@@ -1,7 +1,7 @@
 import { defaultCell, indestructibleCell } from "./Cells";
-import { TETROMINOES, transferToBoard } from "./Tetrominoes";
+import { transferToBoard } from "./Tetrominoes";
 import { movePlayer } from "./PlayerController";
-import { punishOther } from "/src/utils/SendServer";
+import { punishOther } from "../utils/UseServer";
 
 export const buildBoard = ({ rows, columns }) => {
     const builtRows = Array.from({ length: rows }, () =>
@@ -34,6 +34,8 @@ export const nextBoard = ({
     resetPlayer,
     addLinesCleared,
     addIndestructibleLines,
+    socket,
+    room,
 }) => {
     const { tetromino, position } = player;
 
@@ -74,13 +76,16 @@ export const nextBoard = ({
     if (linesCleared > 0) {
         addLinesCleared(linesCleared);
     }
-    const linesToPunish = Math.round(linesCleared / 2);
+    const linesToPunish = Math.floor(linesCleared / 2);
     // punish other is when you delete more then 2 lines the other receive +1 lines penalty
-    if (linesToPunish > 0) punishOther(linesToPunish);
+    if (linesToPunish > 0) punishOther(linesToPunish, socket, room);
     if (player.collided || player.isFastDropping) {
         resetPlayer();
     }
-
+    // if you have indestructible lines to add
+    if (addIndestructibleLines > 0) {
+        console.log("Adding indestructible lines:", addIndestructibleLines);
+    }
     // add the rows that are indestructable
     const withIndestrucableRows = indestructibleLines(
         clearedRows,
@@ -147,15 +152,26 @@ const clearLines = (rows) => {
 const indestructibleLines = (rows, addIndestructibleLines) => {
     const indestructibleLine = rows[0].map(() => ({ ...indestructibleCell }));
     const reverseRows = [...rows].reverse();
+    const count = rows.filter(
+        (row) => row[0].className === "indestructible"
+    ).length;
+    //
+    if (addIndestructibleLines === 0 || addIndestructibleLines === count) return [...rows];
+
+    if (addIndestructibleLines > 1) {
+        debugger;
+    }
     const newRows = reverseRows
         .reduce(
             ({ acc, count }, row) => {
                 if (count < addIndestructibleLines) {
                     return {
-                        acc: [...acc, [...indestructibleLine]],
+                        acc: [...acc, [...indestructibleLine], [...row]],
                         count: count + 1,
                     };
                 }
+                if (acc.length == rows.length)
+                    return { acc, count };
                 return {
                     acc: [...acc, [...row]],
                     count,
@@ -169,7 +185,7 @@ const indestructibleLines = (rows, addIndestructibleLines) => {
             }
         )
         .acc.reverse();
-
+    debugger
     return newRows;
 };
 
