@@ -4,11 +4,18 @@ import Menu from '../src/components/Menu';
 
 describe('Menu', () => {
   const defaultProps = {
-    onClick: jest.fn()
+    onClick: jest.fn(),
+    socket: {
+      on: jest.fn(),
+      off: jest.fn(),
+      emit: jest.fn()
+    }
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    defaultProps.socket.on.mockClear();
+    defaultProps.socket.off.mockClear();
   });
 
   it('renders without crashing', () => {
@@ -38,12 +45,19 @@ describe('Menu', () => {
 
   it('calls onClick function when button is clicked', () => {
     const onClick = jest.fn();
-    render(<Menu onClick={onClick} />);
+    render(<Menu onClick={onClick} socket={defaultProps.socket} />);
 
     const button = screen.getByText('Play Tetris');
     fireEvent.click(button);
 
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets up socket listeners for roomCounter and playersUpdate', () => {
+    render(<Menu {...defaultProps} />);
+
+    expect(defaultProps.socket.on).toHaveBeenCalledWith("roomCounter", expect.any(Function));
+    expect(defaultProps.socket.on).toHaveBeenCalledWith("playersUpdate", expect.any(Function));
   });
 
   it('calls onClick function multiple times when button is clicked multiple times', () => {

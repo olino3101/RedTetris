@@ -20,7 +20,12 @@ describe('useBoard', () => {
     },
     resetPlayer: jest.fn(),
     addLinesCleared: jest.fn(),
-    addIndestructibleLines: jest.fn()
+    addIndestructibleLines: jest.fn(),
+    socket: {
+      emit: jest.fn(),
+      on: jest.fn()
+    },
+    room: 'testroom'
   };
 
   const mockBoard = {

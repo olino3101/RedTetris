@@ -11,7 +11,7 @@ describe('useDropTime', () => {
   it('initializes with default drop time', () => {
     const { result } = renderHook(() => useDropTime({ gameStats: defaultGameStats }));
 
-    expect(result.current[0]).toBe(200); // defaultDropTime
+    expect(result.current[0]).toBe(400); // defaultDropTime
   });
 
   describe('useDropTime', () => {
@@ -26,11 +26,10 @@ describe('useDropTime', () => {
   });
 
   it('calculates drop time based on level', () => {
-    const gameStats = { level: 3 };
-    const { result } = renderHook(() => useDropTime({ gameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: 3 } }));
 
-    // level 3: 200 - (50 * 2) = 100
-    expect(result.current[0]).toBe(100);
+    // level 3: 400 - (50 * 2) = 300
+    expect(result.current[0]).toBe(300);
   });
 
   it('calculates drop time for high level', () => {
@@ -42,98 +41,87 @@ describe('useDropTime', () => {
   });
 
   it('respects minimum drop time', () => {
-    const gameStats = { level: 5 };
-    const { result } = renderHook(() => useDropTime({ gameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: 8 } }));
 
-    // level 5: 200 - (50 * 4) = 200 - 200 = 0, but minimum is 100
+    // level 8: 400 - (50 * 7) = 400 - 350 = 50, but minimum is 100
     expect(result.current[0]).toBe(100);
   });
 
   it('handles level 1 correctly', () => {
-    const gameStats = { level: 1 };
-    const { result } = renderHook(() => useDropTime({ gameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: 1 } }));
 
-    // level 1: 200 - (50 * 0) = 200
-    expect(result.current[0]).toBe(200);
+    // level 1: 400 - (50 * 0) = 400
+    expect(result.current[0]).toBe(400);
   });
 
   it('handles level 2 correctly', () => {
-    const gameStats = { level: 2 };
-    const { result } = renderHook(() => useDropTime({ gameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: 2 } }));
 
-    // level 2: 200 - (50 * 1) = 150
-    expect(result.current[0]).toBe(150);
+    // level 2: 400 - (50 * 1) = 350
+    expect(result.current[0]).toBe(350);
   });
 
 
   it('handles resume without previous drop time', () => {
-    const { result } = renderHook(() => useDropTime({ gameStats: defaultGameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: 1 } }));
 
-    const [dropTime, pauseDropTime, resumeDropTime] = result.current;
-
-    // Try to resume without pausing first
     act(() => {
-      resumeDropTime();
+      result.current[2](); // resumeDropTime
     });
 
     // Should not change anything
-    expect(result.current[0]).toBe(200);
+    expect(result.current[0]).toBe(400);
   });
 
   it('updates drop time when level changes', () => {
-    const { result, rerender } = renderHook(
-      ({ gameStats }) => useDropTime({ gameStats }),
-      { initialProps: { gameStats: { level: 1 } } }
-    );
+    const { result, rerender } = renderHook(({ gameStats }) => useDropTime({ gameStats }), {
+      initialProps: { gameStats: { level: 1 } }
+    });
 
     // Initial level 1
-    expect(result.current[0]).toBe(200);
+    expect(result.current[0]).toBe(400);
 
     // Change to level 3
     rerender({ gameStats: { level: 3 } });
-    expect(result.current[0]).toBe(100);
+    expect(result.current[0]).toBe(300);
   });
 
   it('updates drop time when level increases', () => {
-    const { result, rerender } = renderHook(
-      ({ gameStats }) => useDropTime({ gameStats }),
-      { initialProps: { gameStats: { level: 1 } } }
-    );
+    const { result, rerender } = renderHook(({ gameStats }) => useDropTime({ gameStats }), {
+      initialProps: { gameStats: { level: 1 } }
+    });
 
     // Level 1
-    expect(result.current[0]).toBe(200);
+    expect(result.current[0]).toBe(400);
 
     // Level 2
     rerender({ gameStats: { level: 2 } });
-    expect(result.current[0]).toBe(150);
+    expect(result.current[0]).toBe(350);
 
     // Level 3
     rerender({ gameStats: { level: 3 } });
-    expect(result.current[0]).toBe(100);
+    expect(result.current[0]).toBe(300);
   });
 
   it('handles level 0 gracefully', () => {
-    const gameStats = { level: 0 };
-    const { result } = renderHook(() => useDropTime({ gameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: 0 } }));
 
-    // level 0: 200 - (50 * -1) = 200 + 50 = 250
-    expect(result.current[0]).toBe(250);
+    // level 0: 400 - (50 * -1) = 400 + 50 = 450
+    expect(result.current[0]).toBe(450);
   });
 
   it('handles negative level gracefully', () => {
-    const gameStats = { level: -5 };
-    const { result } = renderHook(() => useDropTime({ gameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: -5 } }));
 
-    // level -5: 200 - (50 * -6) = 200 + 300 = 500
-    expect(result.current[0]).toBe(500);
+    // level -5: 400 - (50 * -6) = 400 + 300 = 700
+    expect(result.current[0]).toBe(700);
   });
 
   it('handles string level gracefully', () => {
-    const gameStats = { level: "3" };
-    const { result } = renderHook(() => useDropTime({ gameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: "3" } }));
 
     // String "3" should be converted to number 3
-    expect(result.current[0]).toBe(100);
+    expect(result.current[0]).toBe(300);
   });
 
   it('handles very high level', () => {
@@ -145,10 +133,9 @@ describe('useDropTime', () => {
   });
 
   it('handles edge case of level causing exact minimum drop time', () => {
-    const gameStats = { level: 3 };
-    const { result } = renderHook(() => useDropTime({ gameStats }));
+    const { result } = renderHook(() => useDropTime({ gameStats: { level: 7 } }));
 
-    // level 3: 200 - (50 * 2) = 200 - 100 = 100 (exactly at minimum)
+    // level 7: 400 - (50 * 6) = 400 - 300 = 100 (exactly at minimum)
     expect(result.current[0]).toBe(100);
   });
 });

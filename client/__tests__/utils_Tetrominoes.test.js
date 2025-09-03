@@ -1,17 +1,10 @@
-import { TETROMINOES, randomTetromino, transferToBoard, rotate } from '../src/utils/Tetrominoes.jsx';
+import { TETROMINOES, transferToBoard, rotate } from '../src/utils/Tetrominoes.jsx';
 
 describe('TETROMINOES', () => {
     it('should have all 7 tetrominoes', () => {
         expect(Object.keys(TETROMINOES)).toEqual(
             expect.arrayContaining(['I', 'O', 'T', 'S', 'Z', 'J', 'L'])
         );
-    });
-});
-
-describe('randomTetromino', () => {
-    it('returns a valid tetromino', () => {
-        const tetro = randomTetromino();
-        expect(Object.values(TETROMINOES)).toContainEqual(expect.objectContaining({ shape: tetro.shape }));
     });
 });
 
