@@ -5,22 +5,96 @@
     flex-wrap: wrap;
     min-height: 50vh;
     z-index: 100;
+    gap: 20px;
+    padding: 20px;
 }
 
 .Button {
-    padding: 20px 40px;
-    font-size: 1.5rem;
-    border-radius: 10px;
-    border: 2px solid #36deff;
-    background: #ffffff;
-    color: #36deff;
+    padding: 18px 35px;
+    font-size: 1.4rem;
+    font-family: 'Orbitron', 'Exo 2', 'Rajdhani', monospace;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid #00ffff;
+    background:
+        linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%),
+        linear-gradient(45deg, rgba(10, 25, 50, 0.9) 0%, rgba(20, 35, 60, 0.8) 100%);
+    color: #00ffff;
     cursor: pointer;
     margin: 10px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.3),
+        inset 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.Button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
 }
 
 .Button:hover {
-    background: #fff;
-    color: #24a5be;
-    border: 2px solid #24a5be;
+    background:
+        linear-gradient(135deg, rgba(0, 255, 255, 0.2) 0%, rgba(255, 0, 255, 0.2) 100%),
+        linear-gradient(45deg, rgba(20, 35, 60, 0.9) 0%, rgba(30, 45, 70, 0.8) 100%);
+    color: #ffffff;
+    border-color: #ff00ff;
+    box-shadow:
+        0 0 30px rgba(255, 0, 255, 0.5),
+        0 0 50px rgba(0, 255, 255, 0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    text-shadow: 0 0 10px currentColor;
+}
+
+.Button:hover::before {
+    left: 100%;
+}
+
+.Button:active {
+    transform: translateY(0);
+    box-shadow:
+        0 0 15px rgba(255, 0, 255, 0.3),
+        inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .Menu {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .Button {
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        margin: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .Menu {
+        padding: 10px;
+        gap: 10px;
+        flex-direction: column;
+    }
+
+    .Button {
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        margin: 5px;
+        width: 100%;
+        max-width: 250px;
+    }
 }

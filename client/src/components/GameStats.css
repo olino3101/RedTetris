@@ -2,36 +2,112 @@
     position: fixed;
     width: auto;
     list-style-type: none;
-    color: #ff7eb9;
+    color: #00ffff;
     z-index: 100;
-    font-family: 'Fredoka One', 'Comic Neue', sans-serif;
-    background: #fff6e7cc;
-    border-radius: 18px;
-    box-shadow: 0 4px 24px #ffb3ba33;
-    padding: 18px 28px;
+    font-family: 'Orbitron', 'Exo 2', 'Rajdhani', monospace;
+    background:
+        linear-gradient(135deg, rgba(10, 25, 50, 0.95) 0%, rgba(20, 35, 60, 0.9) 100%);
+    border-radius: 12px;
+    box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.4),
+        0 0 40px rgba(255, 0, 255, 0.2),
+        inset 0 0 10px rgba(0, 0, 0, 0.3);
+    padding: 20px 25px;
     margin: 0;
     font-size: 1.1rem;
-    border: 2px solid #ffb3ba;
+    border: 2px solid rgba(0, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    overflow: hidden;
+}
+
+.GameStats::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    animation: scanner 3s infinite;
 }
 
 .GameStats__left {
-    left: 2vw;
-    top: 5vh;
+    left: 5vw;
+    top: 10vh;
     text-align: left;
 }
 
 .GameStats__right {
-    right: 2vw;
-    top: 5vh;
+    right: 5vw;
+    top: 10vh;
     text-align: right;
 }
 
 .GameStats .value {
     font-size: 2.5rem;
     margin-bottom: 0.5em;
-    color: #ff7eb9;
-    text-shadow: 2px 2px 0 #fff6e7, 0 0 8px #bae1ff88;
-    letter-spacing: 1px;
+    color: #00ffff;
+    text-shadow:
+        0 0 10px currentColor,
+        0 0 20px rgba(0, 255, 255, 0.5),
+        2px 2px 0 rgba(0, 0, 0, 0.8);
+    letter-spacing: 2px;
+    font-weight: bold;
+    animation: data-glow 2s ease-in-out infinite alternate;
+}
+
+.GameStats li {
+    margin: 8px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.GameStats li::before {
+    content: '▶ ';
+    color: #ff00ff;
+    font-size: 0.8em;
+    margin-right: 5px;
+    animation: blink 2s infinite;
+}
+
+@keyframes scanner {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes data-glow {
+    0% {
+        text-shadow:
+            0 0 10px currentColor,
+            0 0 20px rgba(0, 255, 255, 0.5),
+            2px 2px 0 rgba(0, 0, 0, 0.8);
+    }
+
+    100% {
+        text-shadow:
+            0 0 15px currentColor,
+            0 0 30px rgba(0, 255, 255, 0.8),
+            2px 2px 0 rgba(0, 0, 0, 0.8);
+    }
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0.3;
+    }
 }
 
 @media (max-width: 800px) {
@@ -45,15 +121,45 @@
         height: 7vw;
     }
 
+    .GameStats {
+        padding: 15px 20px;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+
     .GameStats .value {
         font-size: 2rem;
     }
 
     .GameStats__left {
         left: 3vw;
+        top: 8vh;
     }
 
     .GameStats__right {
         right: 3vw;
+        top: 8vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .GameStats {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+
+    .GameStats .value {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+
+    .GameStats__left {
+        left: 2vw;
+        top: 5vh;
+    }
+
+    .GameStats__right {
+        right: 2vw;
+        top: 5vh;
     }
 }
