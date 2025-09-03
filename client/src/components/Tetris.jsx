@@ -43,6 +43,8 @@ const Tetris = ({ rows, columns, socket, room, setGameOver }) => {
         gameStats={gameStats}
         player={player}
         setGameOver={setGameOver}
+        socket={socket}
+        room={room}
         setPlayer={setPlayer}
       />
     </div>

@@ -8,6 +8,8 @@ import Game from "./Game.js";
  *  - ON    joinRoom
  *  - ON    startCountdown
  *  - ON    getNextTetromino
+ *  - ON    gameLost
+ *  - EMIT  endOfGame
  *  - EMIT  gameAlreadyStarted: { message: "The game has already started !" }
  *  - EMIT  playersUpdate: { players: ["player name", ...] }
  *  - EMIT  roomCounter: { timeLeft: 10 }
@@ -98,7 +100,9 @@ export default class SocketCommunication {
                 const game = this.gameMap.get(data.room);
                 const board = data.board;
                 if (!game) return;
-                const name = this.gameMap.get(data.room).getPlayerBySocketId(socket.id)?.name;
+                const name = this.gameMap
+                    .get(data.room)
+                    .getPlayerBySocketId(socket.id)?.name;
                 socket.to(data.room).emit("BoardOpponents", { board, name });
             });
 
@@ -108,6 +112,16 @@ export default class SocketCommunication {
                 socket.to(data.room).emit("punishFromOpponent", { lines: data.linesToPunish });
                 // ack({ message: "Opponent punished." });
 
+            });
+
+            socket.on("gameLost", (data) => {
+                removePlayerInGamesBySocketId(this.gameMap, socket.id);
+                const game = this.gameMap.get(data.room);
+                if (game && game.players.length <= 1) {
+                    this.io.to(data.room).emit("endOfGame");
+                    console.log("END OF GAME FOR ROOM", game.room);
+                    this.gameMap.delete(game.room);
+                }
             });
 
             socket.on("disconnect", (reason) => {

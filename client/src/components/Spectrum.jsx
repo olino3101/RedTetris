@@ -4,7 +4,7 @@ import "./Board.css"
 
 import BoardCell from "/src/components/BoardCell";
 
-const Spectrum = ({ board, name, key }) => {
+const Spectrum = ({ board, name }) => {
     if (!board) {
         return <div className="Spectrum no-board">No board data</div>;
     }

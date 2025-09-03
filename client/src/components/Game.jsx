@@ -15,16 +15,17 @@ const Game = ({ room, socket }) => {
 
     useEffect(() => {
         socket.on("gameStart", () => {
-            resetGameOver();
+            setGameOver(false);
             setErrorMessage(null);
         });
         socket.on("gameAlreadyStarted", () => {
+            setGameOver(true);
             setErrorMessage("The game in this room has already started !");
         });
-        socket.on("gameAlreadyStarted", () => {
-            setErrorMessage("The game in this room has already started !");
+        socket.on("endOfGame", () => {
+            setGameOver(true);
         })
-    }, [socket, resetGameOver, gameOver]);
+    }, [socket, setGameOver, gameOver]);
 
     return (
         <div className="Game">

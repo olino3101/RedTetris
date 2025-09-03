@@ -10,8 +10,8 @@ const Spectrums = ({ opponents }) => {
 
     return (
         < div className="Spectrums" >
-            {[...opponents.entries()].map(([name, board]) => (
-                <Spectrum board={board} name={name} key={name} />
+            {[...opponents.entries()].map(([name, board], i) => (
+                <Spectrum board={board} name={name} key={i} />
             ))}
         </div>
     );
