@@ -138,9 +138,8 @@ export default class SocketCommunication {
     }
 
     close() {
-        this.io.close(() => {
-            console.log("Closing sockets.");
-        });
+        this.io.close();
+        console.log("Closing sockets.");
     }
 }
 

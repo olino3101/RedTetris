@@ -1,0 +1,13 @@
+services:
+  test-coverage:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./coverage:/app/coverage
+    environment:
+      - NODE_ENV=test
+      - NODE_OPTIONS=--experimental-vm-modules --no-warnings
+    command: npm run test:coverage
