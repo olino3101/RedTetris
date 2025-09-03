@@ -1,42 +1,33 @@
-// keep only an history (sequence) of tetromino KEYS ("I","O",...) rather than full shapes
-// so we can just send the key to clients (they already know the shapes)
-
-const PIECE_KEYS = ["I", "O", "T", "S", "Z", "J", "L"]; // standard 7-bag could be implemented later
-
 export default class Tetrominoes {
     constructor() {
-        // sequence of keys
-        this.tetrominoKeys = [this.randomKey()];
+        this.tetrominoKeys = [];
+        this.generateTetrominoesUntil(6);
     }
 
-    randomKey() {
-        const index = Math.floor(Math.random() * PIECE_KEYS.length);
-        return PIECE_KEYS[index];
-    }
-
-    addRandomKey() {
-        this.tetrominoKeys.push(this.randomKey());
-    }
-
-    // ensure we have generated up to (and including) index i
-    ensureIndex(i) {
-        while (i >= this.tetrominoKeys.length) {
-            this.addRandomKey();
-        }
-    }
-
-    // get key at index i (generate if needed)
-    getNextTetromino(i) {
-        this.ensureIndex(i);
-        return this.tetrominoKeys[i];
-    }
-
-    // get a batch of upcoming keys
-    getNextBatch(startIndex, count) {
-        const keys = [];
-        for (let i = 0; i < count; i++) {
-            keys.push(this.getNextTetromino(startIndex + i));
+    generateNewBag() {
+        const keys = ["I", "O", "T", "S", "Z", "J", "L"];
+        var count = keys.length,
+            randomnumber,
+            temp;
+        while (count) {
+            randomnumber = (Math.random() * count--) | 0;
+            temp = keys[count];
+            keys[count] = keys[randomnumber];
+            keys[randomnumber] = temp;
         }
         return keys;
+    }
+
+    generateTetrominoesUntil(n) {
+        while (n >= this.tetrominoKeys.length) {
+            const newBag = this.generateNewBag();
+            this.tetrominoKeys.push(...newBag);
+        }
+    }
+
+    // Get tetromino at index i (and generate if needed)
+    getNextTetromino(i) {
+        this.generateTetrominoesUntil(i);
+        return this.tetrominoKeys[i];
     }
 }

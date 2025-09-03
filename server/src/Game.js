@@ -9,8 +9,9 @@ export default class Game {
         this.room = room;
         this.players = [];
         this.tetrominoes = new Tetrominoes();
-        // countdown before the game actually starts (in seconds)
-        this.timeLeft = 10; // default value, can be changed before starting
+
+        // Countdown
+        this.timeLeft = 3;
         this.countdownInterval = null;
         this.started = false;
     }
@@ -48,8 +49,6 @@ export default class Game {
     }
 
     setNewHostInGame(exceptPlayer) {
-        console.log("Setting a new host...");
-
         const newHost = this.players.find((player) => player !== exceptPlayer);
 
         if (newHost) {
@@ -68,6 +67,7 @@ export default class Game {
         if (this.countdownInterval) return; // already running
         this.timeLeft = durationSeconds;
         this.started = false;
+
         io.to(room).emit("roomCounter", { timeLeft: this.timeLeft });
         console.log("Starting countdown for room:", room);
         this.countdownInterval = setInterval(() => {
@@ -90,5 +90,4 @@ export default class Game {
             this.countdownInterval = null;
         }
     }
-
 }
