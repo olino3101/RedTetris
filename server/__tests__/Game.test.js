@@ -57,16 +57,6 @@ describe("Game", () => {
         expect(game.players[1].isHost).toBe(true);
     });
 
-    test("should check if player name exists", () => {
-        game.addPlayer("socket1", "Player1");
-        game.addPlayer("socket2", "Player2");
-
-        expect(game.hasPlayerName("Player1")).toBe(true);
-        expect(game.hasPlayerName("Player2")).toBe(true);
-        expect(game.hasPlayerName("Player3")).toBe(false);
-        expect(game.hasPlayerName("")).toBe(false);
-    });
-
     test("should get player by socket ID", () => {
         game.addPlayer("socket1", "Player1");
         game.addPlayer("socket2", "Player2");

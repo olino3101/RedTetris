@@ -1,11 +1,11 @@
 import { hasCollision, isWithinBoard } from "/src/utils/Board";
-import { Action } from "/src/utils/Input"
-import { rotate } from "/src/utils/Tetrominoes"
+import { Action } from "/src/utils/Input";
+import { rotate } from "/src/utils/Tetrominoes";
 
 const attemptRotation = ({ board, player, setPlayer }) => {
     const shape = rotate({
         piece: player.tetromino.shape,
-        direction: 1
+        direction: 1,
     });
 
     const position = player.position;
@@ -18,8 +18,8 @@ const attemptRotation = ({ board, player, setPlayer }) => {
             ...player,
             tetromino: {
                 ...player.tetromino,
-                shape
-            }
+                shape,
+            },
         });
     } else {
         return false;
@@ -29,21 +29,19 @@ const attemptRotation = ({ board, player, setPlayer }) => {
 export const movePlayer = ({ delta, position, shape, board }) => {
     const desiredNextPosition = {
         row: position.row + delta.row,
-        column: position.column + delta.column
+        column: position.column + delta.column,
     };
-
-
 
     const collided = hasCollision({
         board,
         position: desiredNextPosition,
-        shape
+        shape,
     });
 
     const isOnBoard = isWithinBoard({
         board,
         position: desiredNextPosition,
-        shape
+        shape,
     });
 
     const preventMove = !isOnBoard || (isOnBoard && collided);
@@ -61,7 +59,8 @@ const attemptMovement = ({
     setPlayer,
     setGameOver,
     room,
-    socket
+    name,
+    socket,
 }) => {
     const delta = { row: 0, column: 0 };
     let isFastDropping = false;
@@ -80,24 +79,23 @@ const attemptMovement = ({
         delta,
         position: player.position,
         shape: player.tetromino.shape,
-        board
+        board,
     });
 
     const isGameOver = collided && player.position.row === 0;
     if (isGameOver) {
         setGameOver(isGameOver);
         socket.emit("gameLost", { room });
-        console.log("Game lost...");
+        socket.emit("joinRoom", { room, name });
     }
 
     setPlayer({
         ...player,
         collided,
         isFastDropping,
-        position: nextPosition
+        position: nextPosition,
     });
 };
-
 
 export const playerController = ({
     action,
@@ -106,21 +104,33 @@ export const playerController = ({
     setPlayer,
     setGameOver,
     room,
-    socket
+    name,
+    socket,
 }) => {
-
     if (!action) return;
 
     if (action === Action.Rotate) {
         attemptRotation({ board, player, setPlayer });
     } else {
-        attemptMovement({ board, player, setPlayer, action, setGameOver, room, socket });
+        attemptMovement({
+            board,
+            player,
+            setPlayer,
+            action,
+            setGameOver,
+            room,
+            name,
+            socket,
+        });
     }
 };
 
 export const isGoingToCollided = ({ board, player }) => {
-
     const { tetromino, position } = player;
     const nextPosition = { row: position.row + 1, column: position.column };
-    return hasCollision({ board, position: nextPosition, shape: tetromino.shape });
+    return hasCollision({
+        board,
+        position: nextPosition,
+        shape: tetromino.shape,
+    });
 };

@@ -17,7 +17,7 @@ export const getNextTetromino = (socket, room) => {
     return new Promise((resolve) => {
         socket.emit(
             "getNextTetrominoes",
-            { room: room, socketId: socket.id },
+            { room: room },
             ({ key }) => {
                 const tetromino = TETROMINOES[key];
                 resolve(tetromino);

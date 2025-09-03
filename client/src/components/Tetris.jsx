@@ -10,7 +10,7 @@ import { useGameStats } from "/src/hooks/UseGameStats";
 import { usePlayer } from "/src/hooks/UsePlayer";
 import { sendBoard, getOpponentsBoards } from "/src/utils/UseServer";
 import { usePunishedLine } from "../hooks/UsePunishLine";
-const Tetris = ({ rows, columns, socket, room, setGameOver }) => {
+const Tetris = ({ rows, columns, socket, room, name, setGameOver }) => {
   const [gameStats, addLinesCleared] = useGameStats();
   const [player, setPlayer, resetPlayer] = usePlayer(socket, room);
   const addIndestructibleLines = usePunishedLine(socket);
@@ -42,6 +42,7 @@ const Tetris = ({ rows, columns, socket, room, setGameOver }) => {
         setGameOver={setGameOver}
         socket={socket}
         room={room}
+        name={name}
         setPlayer={setPlayer}
       />
       <Board board={board} />

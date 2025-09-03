@@ -37,7 +37,7 @@ const GameIfConnected = () => {
     // send to other
     const { socket, isConnected, error } = useUserData({ room, name });
     if (isConnected && !error) {
-        return <Game room={room} socket={socket}></Game>;
+        return <Game room={room} name={name} socket={socket}></Game>;
     } else {
         return <div>Waiting server Connection...</div>;
     }

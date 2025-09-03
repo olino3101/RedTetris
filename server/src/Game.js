@@ -25,8 +25,8 @@ export default class Game {
         );
     }
 
-    hasPlayerName(name) {
-        return this.players.some((p) => p.name === name);
+    hasPlayerSocketId(socketId) {
+        return this.players.some((p) => p.socketId === socketId);
     }
 
     getPlayerBySocketId(socketId) {
@@ -38,7 +38,7 @@ export default class Game {
             (player) => player.socketId == socketId
         );
         if (playerIndex !== -1) {
-            console.log("Removing player", this.players[playerIndex].name);
+            console.log("Removing player", this.players[playerIndex].socketId);
             this.players.splice(playerIndex, 1);
             console.log(
                 "New player list:",

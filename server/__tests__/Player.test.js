@@ -40,7 +40,11 @@ describe("Player", () => {
     });
 
     test("should use default isHost value when not provided", () => {
-        const defaultPlayer = new Player("socket789", "DefaultPlayer", mockGame);
+        const defaultPlayer = new Player(
+            "socket789",
+            "DefaultPlayer",
+            mockGame
+        );
 
         expect(defaultPlayer.isHost).toBe(false);
         expect(defaultPlayer.socketId).toBe("socket789");

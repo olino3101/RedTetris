@@ -4,7 +4,7 @@ import Tetris from "/src/components/Tetris";
 import { useGameOver } from "/src/hooks/UseGameOver";
 import { useState } from "react";
 
-const Game = ({ room, socket }) => {
+const Game = ({ room, name, socket }) => {
     const [gameOver, setGameOver, resetGameOver] = useGameOver();
     const [errorMessage, setErrorMessage] = useState(null);
     const start = () => {
@@ -18,14 +18,16 @@ const Game = ({ room, socket }) => {
             setGameOver(false);
             setErrorMessage(null);
         });
-        socket.on("gameAlreadyStarted", () => {
+        socket.on("gameAlreadyStarted", (data) => {
             setGameOver(true);
-            setErrorMessage("The game in this room has already started !");
+            setErrorMessage(data.message);
         });
         socket.on("endOfGame", () => {
             setGameOver(true);
+            socket.emit("joinRoom", {room, name});
+            console.log("rejoining room");
         })
-    }, [socket, setGameOver, gameOver]);
+    }, [socket, setGameOver, room, name, gameOver]);
 
     return (
         <div className="Game">

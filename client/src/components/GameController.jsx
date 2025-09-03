@@ -13,6 +13,7 @@ const GameController = ({
     setGameOver,
     socket,
     room,
+    name,
     setPlayer,
 }) => {
     const [dropTime, pauseDropTime, resumeDropTime, DropTime] = useDropTime({
@@ -32,6 +33,7 @@ const GameController = ({
         if (action == Action.Quit) {
             setGameOver(true);
             socket.emit("gameLost", { room });
+            socket.emit("joinRoom", {room, name});
         } else {
             if (actionIsDrop(action)) pauseDropTime();
             handleInput({ action });
@@ -46,6 +48,7 @@ const GameController = ({
             setPlayer,
             setGameOver,
             room,
+            name,
             socket
         });
     };
