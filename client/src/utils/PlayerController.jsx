@@ -2,6 +2,19 @@ import { hasCollision, isWithinBoard } from "/src/utils/Board";
 import { Action } from "/src/utils/Input";
 import { rotate } from "/src/utils/Tetrominoes";
 
+// Compute landing position for hard drop
+const computeDropPosition = ({ board, position, shape }) => {
+    let row = position.row;
+    while (true) {
+        const next = { row: row + 1, column: position.column };
+        const onBoard = isWithinBoard({ board, position: next, shape });
+        const collided = hasCollision({ board, position: next, shape });
+        if (!onBoard || collided) break;
+        row += 1;
+    }
+    return { ...position, row };
+};
+
 const attemptRotation = ({ board, player, setPlayer }) => {
     const shape = rotate({
         piece: player.tetromino.shape,
@@ -62,12 +75,32 @@ const attemptMovement = ({
     name,
     socket,
 }) => {
-    const delta = { row: 0, column: 0 };
-    let isFastDropping = false;
-
+    // Atomic hard drop
     if (action === Action.FastDrop) {
-        isFastDropping = true;
-    } else if (action === Action.SlowDrop) {
+        const dropPosition = computeDropPosition({
+            board,
+            position: player.position,
+            shape: player.tetromino.shape,
+        });
+
+        const isGameOver = dropPosition.row === 0;
+        if (isGameOver) {
+            setGameOver(true);
+            try { socket.emit("gameLost", { room }); } catch (_) { }
+            try { socket.emit("joinRoom", { room, name }); } catch (_) { }
+        }
+
+        setPlayer({
+            ...player,
+            collided: true,
+            isFastDropping: false,
+            position: dropPosition,
+        });
+        return;
+    }
+
+    const delta = { row: 0, column: 0 };
+    if (action === Action.SlowDrop) {
         delta.row += 1;
     } else if (action === Action.Left) {
         delta.column -= 1;
@@ -85,14 +118,14 @@ const attemptMovement = ({
     const isGameOver = collided && player.position.row === 0;
     if (isGameOver) {
         setGameOver(isGameOver);
-        socket.emit("gameLost", { room });
-        socket.emit("joinRoom", { room, name });
+        try { socket.emit("gameLost", { room }); } catch (_) { }
+        try { socket.emit("joinRoom", { room, name }); } catch (_) { }
     }
 
     setPlayer({
         ...player,
         collided,
-        isFastDropping,
+        isFastDropping: false,
         position: nextPosition,
     });
 };

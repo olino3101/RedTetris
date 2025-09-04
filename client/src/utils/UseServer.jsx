@@ -1,12 +1,8 @@
-import { useOpponentsBoards } from "../hooks/UseOpponentsBoard";
+import { useOpponentsBoardsFromSocket } from "../hooks/UseOpponentsBoard";
 import { TETROMINOES } from "./Tetrominoes";
 
 export const getOpponentsBoards = (socket) => {
-    const { map, set } = useOpponentsBoards();
-    socket.on("BoardOpponents", ({ board, name }) => {
-        set(name, board);
-    });
-    return map;
+    return useOpponentsBoardsFromSocket(socket);
 }
 
 export const sendBoard = (socket, room, board) => {

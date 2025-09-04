@@ -85,8 +85,8 @@ export const nextBoard = ({
         addIndestructibleLines
     );
 
-    // Do NOT reset here; resetting is orchestrated externally (e.g., in Tetris effect) to avoid double-fetch
-    if (player && (player.isFastDropping || player.collided)) {
+    // Only reset when the piece is actually locked
+    if (player && player.collided) {
         resetPlayer();
     }
     return {
@@ -190,6 +190,7 @@ const updateGhostAndTetromino = ({
     position,
     resetPlayer
 }) => {
+
     // Fast drop: draw piece locked at drop position only
     if (player.isFastDropping) {
 
@@ -200,40 +201,19 @@ const updateGhostAndTetromino = ({
             rows,
             shape: tetromino.shape,
         });
-        console.log("\n\n\n\n\n\n\n\n\n\n\nNew row after fast drop:", newRow, player, dropPosition);
-
         return newRow;
-
     }
-
-    // Optional ghost (suppressed when collided via className already)
-    let withGhost = rows;
-    if (className.includes("ghost")) {
-        withGhost = transferToBoard({
+    // Ghost piece      
+    const withGhost = className.includes("ghost")
+        ? transferToBoard({
             className,
             isOccupied: false,
             position: dropPosition,
             rows,
             shape: tetromino.shape,
-        });
-        console.log("With ghost:", withGhost);
-    }
-    else {
-        console.log("No ghost\n\n");
-    }
-    // // Ghost piece      
-    // const withGhost = className.includes("ghost")
-    //     ? transferToBoard({
-    //         className,
-    //         isOccupied: false,
-    //         position: dropPosition,
-    //         rows,
-    //         shape: tetromino.shape,
-    //     })
-    //     : rows;
+        })
+        : rows;
 
-    console.log("With ghost:", withGhost, player);
-    // Current tetromino
     const withTetromino = transferToBoard({
         className: tetromino.className,
         isOccupied: player.collided,
@@ -241,7 +221,6 @@ const updateGhostAndTetromino = ({
         rows: withGhost,
         shape: tetromino.shape,
     });
-    console.log("With tetromino:", withTetromino, player, dropPosition, "\n\nEND");
 
     return withTetromino;
 };

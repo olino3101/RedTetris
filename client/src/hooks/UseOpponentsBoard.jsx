@@ -1,6 +1,4 @@
-import { use } from "react";
-import { TETROMINOES } from "../utils/Tetrominoes";
-import React, { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 
 export const useOpponentsBoards = (intialboards = new Map()) => {
@@ -10,9 +8,24 @@ export const useOpponentsBoards = (intialboards = new Map()) => {
         setMap(prev => new Map(prev).set(key, value));
     }, [setMap]);
 
-    return {
-        map, set
-    };
+    return { map, set };
+}
+
+export const useOpponentsBoardsFromSocket = (socket, intialboards = new Map()) => {
+    const { map, set } = useOpponentsBoards(intialboards);
+
+    useEffect(() => {
+        if (!socket) return;
+        const handler = ({ board, name }) => {
+            set(name, board);
+        };
+        socket.on("BoardOpponents", handler);
+        return () => {
+            socket.off("BoardOpponents", handler);
+        };
+    }, [socket, set]);
+
+    return map;
 }
 
 

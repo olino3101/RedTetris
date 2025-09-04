@@ -19,8 +19,7 @@ const Tetris = ({ rows, columns, socket, room, name, setGameOver }) => {
   const addIndestructibleLines = usePunishedLine(socket);
   const opponents = getOpponentsBoards(socket);
 
-
-  const [board, setBoard] = useBoard({
+  const [board] = useBoard({
     rows,
     columns,
     player,
@@ -42,8 +41,11 @@ const Tetris = ({ rows, columns, socket, room, name, setGameOver }) => {
     }
   }, [board, player, setGameOver]);
 
-
-  sendBoard(socket, room, board);
+  // Only send when board actually changes to avoid flooding
+  useEffect(() => {
+    if (!board) return;
+    sendBoard(socket, room, board);
+  }, [board, socket, room]);
 
   if (!player) {
     return <div className="Tetris loading">Loading...</div>;

@@ -16,7 +16,7 @@ const GameController = ({
     name,
     setPlayer,
 }) => {
-    const [dropTime, pauseDropTime, resumeDropTime, DropTime] = useDropTime({
+    const [dropTime, pauseDropTime, resumeDropTime] = useDropTime({
         gameStats,
     });
 
@@ -53,12 +53,14 @@ const GameController = ({
         });
     };
 
-    // check if its going to collided if so add another frame of drop time
+    // Clamp interval to avoid too-fast rerenders
+    const baseDrop = dropTime ?? 400;
+    const multiplier = isGoingToCollided({ board, player }) ? 4 : 1;
+    const clamped = Math.max(50, baseDrop * multiplier);
 
-    const newdropTime = isGoingToCollided({ board, player }) ? dropTime * 4 : dropTime;
     useInterval(() => {
         handleInput({ action: Action.SlowDrop });
-    }, newdropTime);
+    }, clamped);
 
     return (
         <input
