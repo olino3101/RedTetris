@@ -15,6 +15,7 @@ export const useBoard = ({
     useEffect(() => {
         // Only update board if player is loaded
         if (player) {
+
             setBoard((previousBoard) =>
                 nextBoard({
                     board: previousBoard,
@@ -26,6 +27,7 @@ export const useBoard = ({
                     room,
                 })
             );
+
         }
     }, [player, resetPlayer, addLinesCleared, addIndestructibleLines]);
 

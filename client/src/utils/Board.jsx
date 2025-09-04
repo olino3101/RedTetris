@@ -37,11 +37,13 @@ export const nextBoard = ({
     socket,
     room,
 }) => {
+
     const { tetromino, position } = player;
 
     const updateOccupiedRows = board.rows.map((row) =>
         row.map((cell) => (cell.occupied ? cell : { ...defaultCell }))
     );
+
 
     // If no tetromino yet (still loading), return current board
     if (!tetromino) {
@@ -79,9 +81,7 @@ export const nextBoard = ({
     const linesToPunish = Math.floor(linesCleared / 2);
     // punish other is when you delete more then 2 lines the other receive +1 lines penalty
     if (linesToPunish > 0) punishOther(linesToPunish, socket, room);
-    if (player.collided || player.isFastDropping) {
-        resetPlayer();
-    }
+
 
     // add the rows that are indestructable
     const withIndestrucableRows = indestructibleLines(
@@ -89,6 +89,9 @@ export const nextBoard = ({
         addIndestructibleLines
     );
 
+    if (player.collided || player.isFastDropping) {
+        resetPlayer();
+    }
     return {
         rows: withIndestrucableRows,
         size: { ...board.size },

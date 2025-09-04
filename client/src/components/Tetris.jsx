@@ -15,6 +15,10 @@ const Tetris = ({ rows, columns, socket, room, name, setGameOver }) => {
   const [player, setPlayer, resetPlayer] = usePlayer(socket, room);
   const addIndestructibleLines = usePunishedLine(socket);
   const opponents = getOpponentsBoards(socket);
+
+  if (player && (player.isFastDropping || player.collided)) {
+    resetPlayer();
+  }
   const [board, setBoard] = useBoard({
     rows,
     columns,
@@ -25,6 +29,8 @@ const Tetris = ({ rows, columns, socket, room, name, setGameOver }) => {
     socket,
     room,
   });
+
+
 
 
   sendBoard(socket, room, board);

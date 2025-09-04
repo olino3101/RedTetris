@@ -33,7 +33,7 @@ const GameController = ({
         if (action == Action.Quit) {
             setGameOver(true);
             socket.emit("gameLost", { room });
-            socket.emit("joinRoom", {room, name});
+            socket.emit("joinRoom", { room, name });
         } else {
             if (actionIsDrop(action)) pauseDropTime();
             handleInput({ action });
