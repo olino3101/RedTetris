@@ -5,7 +5,7 @@ services:
       context: ./client
       dockerfile: Dockerfile.prod
     volumes:
-      - redtetris-dist:/app/dist
+      - ./client/dist:/app/dist
     networks:
       - redtetris-net
     environment:
@@ -25,7 +25,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - redtetris-dist:/app/client:ro
+      - ./client/dist:/app/client:ro
     networks:
       - redtetris-net
 
