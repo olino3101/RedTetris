@@ -30,7 +30,16 @@ const Tetris = ({ rows, columns, socket, room, name, setGameOver }) => {
     room,
   });
 
-
+  useEffect(() => {
+    if (player && hasCollision({
+      board,
+      position: { row: player.position.row, column: player.position.column },
+      shape: player.tetromino.shape
+    }) && player.position.row === 0) {
+      setGameOver(true);
+      console.log("Game Over detected in Tetris component");
+    }
+  }, [board, player, setGameOver]);
 
 
   sendBoard(socket, room, board);
