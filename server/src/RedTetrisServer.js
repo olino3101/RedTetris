@@ -1,7 +1,7 @@
 import * as http from "node:http";
 
 export default class RedTetrisServer {
-    constructor() {
+    constructor(apiPrefix) {
         this.server = http.createServer((req, res) => {
             this.setCors(res);
 
@@ -11,10 +11,12 @@ export default class RedTetrisServer {
                 return;
             }
 
-            if (
-                req.method === "GET" &&
-                (req.url === "/" || req.url === "/api/")
-            ) {
+            if (req.method === "GET" && !req.url.startsWith(apiPrefix)) {
+                // Serve SPA
+                
+            }
+
+            if (req.method === "GET" && req.url === apiPrefix) {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(
                     JSON.stringify({
@@ -27,14 +29,14 @@ export default class RedTetrisServer {
                 return;
             }
 
-            if (req.method === "GET" && req.url === "/health") {
+            if (req.method === "GET" && req.url === apiPrefix + "/health") {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ status: "ok" }));
                 return;
             }
 
             // IMPORTANT: Let Socket.IO handle its own transport endpoints.
-            if (req.url.startsWith("/socket.io")) {
+            if (req.url.startsWith(apiPrefix + "/socket.io")) {
                 return; // Do not send a response; Socket.IO listener (added later) will respond.
             }
 

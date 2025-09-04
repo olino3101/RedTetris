@@ -7,8 +7,7 @@ COPY package.json package.json
 COPY package-lock.json package-lock.json
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# Copy source and build
+# Copy source and build at runtime
 COPY . .
-# RUN npm run build
 
-CMD ["npm", "run", "build"]
+CMD ["/bin/sh", "-c", "rm -rf dist/* && npm run build && ls -laR dist"]
