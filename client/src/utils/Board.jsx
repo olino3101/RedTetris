@@ -37,13 +37,11 @@ export const nextBoard = ({
     socket,
     room,
 }) => {
-
     const { tetromino, position } = player;
 
     const updateOccupiedRows = board.rows.map((row) =>
         row.map((cell) => (cell.occupied ? cell : { ...defaultCell }))
     );
-
 
     // If no tetromino yet (still loading), return current board
     if (!tetromino) {
@@ -59,10 +57,9 @@ export const nextBoard = ({
         shape: tetromino.shape,
     });
 
-    const className = `${tetromino.className} 
-    ${player.isFastDropping ? "" : "ghost"}`;
+    const className = `${tetromino.className} ${(!player.isFastDropping && !player.collided) ? "ghost" : ""}`;
 
-    // update tetromino ghost
+    // update tetromino/ghost
     const updateTetrominoRows = updateGhostAndTetromino({
         className,
         player,
@@ -70,6 +67,7 @@ export const nextBoard = ({
         rows: updateOccupiedRows,
         tetromino,
         position,
+        resetPlayer,
     });
 
     // clear the lines that are full
@@ -79,9 +77,7 @@ export const nextBoard = ({
         addLinesCleared(linesCleared);
     }
     const linesToPunish = Math.floor(linesCleared / 2);
-    // punish other is when you delete more then 2 lines the other receive +1 lines penalty
     if (linesToPunish > 0) punishOther(linesToPunish, socket, room);
-
 
     // add the rows that are indestructable
     const withIndestrucableRows = indestructibleLines(
@@ -89,7 +85,8 @@ export const nextBoard = ({
         addIndestructibleLines
     );
 
-    if (player.collided || player.isFastDropping) {
+    // Do NOT reset here; resetting is orchestrated externally (e.g., in Tetris effect) to avoid double-fetch
+    if (player && (player.isFastDropping || player.collided)) {
         resetPlayer();
     }
     return {
@@ -191,24 +188,60 @@ const updateGhostAndTetromino = ({
     rows,
     tetromino,
     position,
+    resetPlayer
 }) => {
-    const updateGhost = transferToBoard({
-        className,
-        isOccupied: player.isFastDropping,
-        position: dropPosition,
-        rows,
-        shape: tetromino.shape,
-    });
+    // Fast drop: draw piece locked at drop position only
+    if (player.isFastDropping) {
 
-    if (!player.isFastDropping) {
-        const updateTetrominoRows = transferToBoard({
+        const newRow = transferToBoard({
             className: tetromino.className,
-            isOccupied: player.collided,
-            position,
-            rows: updateGhost,
+            isOccupied: true,
+            position: dropPosition,
+            rows,
             shape: tetromino.shape,
         });
-        return updateTetrominoRows;
+        console.log("\n\n\n\n\n\n\n\n\n\n\nNew row after fast drop:", newRow, player, dropPosition);
+
+        return newRow;
+
     }
-    return updateGhost;
+
+    // Optional ghost (suppressed when collided via className already)
+    let withGhost = rows;
+    if (className.includes("ghost")) {
+        withGhost = transferToBoard({
+            className,
+            isOccupied: false,
+            position: dropPosition,
+            rows,
+            shape: tetromino.shape,
+        });
+        console.log("With ghost:", withGhost);
+    }
+    else {
+        console.log("No ghost\n\n");
+    }
+    // // Ghost piece      
+    // const withGhost = className.includes("ghost")
+    //     ? transferToBoard({
+    //         className,
+    //         isOccupied: false,
+    //         position: dropPosition,
+    //         rows,
+    //         shape: tetromino.shape,
+    //     })
+    //     : rows;
+
+    console.log("With ghost:", withGhost, player);
+    // Current tetromino
+    const withTetromino = transferToBoard({
+        className: tetromino.className,
+        isOccupied: player.collided,
+        position,
+        rows: withGhost,
+        shape: tetromino.shape,
+    });
+    console.log("With tetromino:", withTetromino, player, dropPosition, "\n\nEND");
+
+    return withTetromino;
 };

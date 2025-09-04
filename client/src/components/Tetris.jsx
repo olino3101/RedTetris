@@ -10,15 +10,16 @@ import { useGameStats } from "/src/hooks/UseGameStats";
 import { usePlayer } from "/src/hooks/UsePlayer";
 import { sendBoard, getOpponentsBoards } from "/src/utils/UseServer";
 import { usePunishedLine } from "../hooks/UsePunishLine";
+import { useEffect } from "react";
+import { hasCollision } from "../utils/Board";
+
 const Tetris = ({ rows, columns, socket, room, name, setGameOver }) => {
   const [gameStats, addLinesCleared] = useGameStats();
   const [player, setPlayer, resetPlayer] = usePlayer(socket, room);
   const addIndestructibleLines = usePunishedLine(socket);
   const opponents = getOpponentsBoards(socket);
 
-  if (player && (player.isFastDropping || player.collided)) {
-    resetPlayer();
-  }
+
   const [board, setBoard] = useBoard({
     rows,
     columns,
