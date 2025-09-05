@@ -6,51 +6,56 @@ import {
     afterEach,
     jest,
 } from "@jest/globals";
-import fs from "fs";
-import path from "path";
-
-// Mock the modules before importing main
-jest.mock("../src/RedTetrisServer.js");
-jest.mock("../src/SocketCommunication.js");
 
 describe("main.js", () => {
     let originalEnv;
-    let MockRedTetrisServer;
-    let MockSocketCommunication;
     let mockServer;
     let mockSocket;
+    let MockRedTetrisServer;
+    let MockSocketCommunication;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         // Save original environment
         originalEnv = { ...process.env };
+
+        // Mock process.exit to prevent test termination
+        jest.spyOn(process, 'exit').mockImplementation(() => {});
 
         // Reset modules
         jest.resetModules();
 
         // Create mocks
         mockServer = {
-            server: { close: jest.fn() },
+            server: { 
+                close: jest.fn((callback) => {
+                    if (callback) callback();
+                })
+            },
             start: jest.fn(),
-            close: jest.fn(),
+            close: jest.fn((callback) => {
+                if (callback) callback();
+            }),
         };
 
         mockSocket = {
             close: jest.fn(),
         };
 
-        MockRedTetrisServer = jest.fn().mockImplementation(() => mockServer);
-        MockSocketCommunication = jest
-            .fn()
-            .mockImplementation(() => mockSocket);
-
-        // Mock the modules
-        jest.doMock("../src/RedTetrisServer.js", () => ({
-            default: MockRedTetrisServer,
+        // Mock the modules with jest.unstable_mockModule for ES modules
+        jest.unstable_mockModule("../src/RedTetrisServer.js", () => ({
+            default: jest.fn(() => mockServer)
         }));
 
-        jest.doMock("../src/SocketCommunication.js", () => ({
-            default: MockSocketCommunication,
+        jest.unstable_mockModule("../src/SocketCommunication.js", () => ({
+            default: jest.fn(() => mockSocket)
         }));
+
+        // Import the mocked constructors
+        const RedTetrisServerModule = await import("../src/RedTetrisServer.js");
+        const SocketCommunicationModule = await import("../src/SocketCommunication.js");
+        
+        MockRedTetrisServer = RedTetrisServerModule.default;
+        MockSocketCommunication = SocketCommunicationModule.default;
     });
 
     afterEach(() => {

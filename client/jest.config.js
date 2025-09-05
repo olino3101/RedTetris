@@ -13,5 +13,13 @@ export default {
     },
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
     testTimeout: 10000,
-    maxWorkers: 1
+    maxWorkers: 1,
+    coverageThreshold: {
+        global: {
+            branches: 50,
+            functions: 70,
+            lines: 70,
+            statements: 70,
+        },
+    },
 };

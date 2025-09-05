@@ -17,8 +17,7 @@ export default {
     },
     testMatch: ["**/__tests__/**/*.test.js"],
     testPathIgnorePatterns: [
-        "__tests__/main.test.js",
-        "__tests__/RedTetrisServer.test.js",
+        "__tests__/main.test.js", // Complex ES module mocking issues
     ],
     setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
     testTimeout: 15000, // Increase default timeout to 15 seconds

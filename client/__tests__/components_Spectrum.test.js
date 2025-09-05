@@ -2,15 +2,146 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Spectrum from '../src/components/Spectrum';
 
-describe('Spectrum', () => {
-    const defaultProps = {
-        player: { rows: [[{ occupied: false, className: '' }]] },
-        index: 1
+// Mock BoardCell component
+jest.mock('/src/components/BoardCell', () => {
+    return function MockBoardCell({ cell }) {
+        return <div data-testid="board-cell" data-cell={JSON.stringify(cell)} />;
     };
+});
 
-    it('renders without crashing', () => {
-        render(<Spectrum {...defaultProps} />);
-        expect(true).toBe(true); // Basic test to ensure no errors
+describe('Spectrum', () => {
+    it('renders without crashing with valid board', () => {
+        const props = {
+            board: {
+                size: { rows: 2, columns: 2 },
+                rows: [
+                    [{ type: 'empty' }, { type: 'filled' }],
+                    [{ type: 'filled' }, { type: 'empty' }]
+                ]
+            },
+            name: 'Player 1'
+        };
+
+        render(<Spectrum {...props} />);
+
+        expect(screen.getByText('Player 1')).toBeInTheDocument();
+        expect(screen.getAllByTestId('board-cell')).toHaveLength(4);
+    });
+
+    it('renders "No board data" when board is null', () => {
+        const props = {
+            board: null,
+            name: 'Player 1'
+        };
+
+        render(<Spectrum {...props} />);
+
+        expect(screen.getByText('No board data')).toBeInTheDocument();
+        expect(screen.getByText('No board data')).toHaveClass('Spectrum', 'no-board');
+    });
+
+    it('renders "No board data" when board is undefined', () => {
+        const props = {
+            board: undefined,
+            name: 'Player 1'
+        };
+
+        render(<Spectrum {...props} />);
+
+        expect(screen.getByText('No board data')).toBeInTheDocument();
+    });
+
+    it('applies correct grid styles to board', () => {
+        const props = {
+            board: {
+                size: { rows: 3, columns: 4 },
+                rows: [
+                    [{ type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' }],
+                    [{ type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' }],
+                    [{ type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' }]
+                ]
+            },
+            name: 'Player 2'
+        };
+
+        const { container } = render(<Spectrum {...props} />);
+        const boardElement = container.querySelector('.Spectrum-board');
+
+        expect(boardElement).toHaveStyle({
+            gridTemplateRows: 'repeat(3, 1fr)',
+            gridTemplateColumns: 'repeat(4, 1fr)'
+        });
+    });
+
+    it('renders correct number of cells based on board size', () => {
+        const props = {
+            board: {
+                size: { rows: 2, columns: 3 },
+                rows: [
+                    [{ type: 'I' }, { type: 'O' }, { type: 'T' }],
+                    [{ type: 'L' }, { type: 'J' }, { type: 'S' }]
+                ]
+            },
+            name: 'Player 3'
+        };
+
+        render(<Spectrum {...props} />);
+
+        const cells = screen.getAllByTestId('board-cell');
+        expect(cells).toHaveLength(6); // 2 rows × 3 columns
+    });
+
+    it('passes correct cell data to BoardCell components', () => {
+        const props = {
+            board: {
+                size: { rows: 1, columns: 2 },
+                rows: [
+                    [{ type: 'I', occupied: true }, { type: 'empty', occupied: false }]
+                ]
+            },
+            name: 'Player 4'
+        };
+
+        render(<Spectrum {...props} />);
+
+        const cells = screen.getAllByTestId('board-cell');
+        expect(cells[0]).toHaveAttribute('data-cell', JSON.stringify({ type: 'I', occupied: true }));
+        expect(cells[1]).toHaveAttribute('data-cell', JSON.stringify({ type: 'empty', occupied: false }));
+    });
+
+    it('renders player name correctly', () => {
+        const props = {
+            board: {
+                size: { rows: 1, columns: 1 },
+                rows: [[{ type: 'empty' }]]
+            },
+            name: 'Test Player Name'
+        };
+
+        render(<Spectrum {...props} />);
+
+        expect(screen.getByText('Test Player Name')).toBeInTheDocument();
+        expect(screen.getByText('Test Player Name')).toHaveClass('Spectrum-name');
+    });
+
+    it('handles empty board rows', () => {
+        const props = {
+            board: {
+                size: { rows: 0, columns: 0 },
+                rows: []
+            },
+            name: 'Empty Board Player'
+        };
+
+        render(<Spectrum {...props} />);
+
+        expect(screen.getByText('Empty Board Player')).toBeInTheDocument();
+        expect(screen.queryAllByTestId('board-cell')).toHaveLength(0);
+    });
+
+    it('component is memoized (React.memo)', () => {
+        // Test that the component is wrapped with React.memo
+        expect(Spectrum.$$typeof).toBe(Symbol.for('react.memo'));
     });
 });
 

@@ -11,7 +11,7 @@ export default class Game {
         this.tetrominoes = new Tetrominoes();
 
         // Countdown
-        this.timeLeft = 3;
+        this.timeLeft = 10; // initial state before any countdown starts
         this.countdownInterval = null;
         this.started = false;
     }
@@ -60,6 +60,21 @@ export default class Game {
                 this.room
             );
         }
+    }
+
+    // Punish every player except the punisher (by name or Player object)
+    punishOthers(punisher, linesToPunish) {
+        const punisherName =
+            typeof punisher === "string" ? punisher : punisher?.name;
+
+        this.players.forEach((player) => {
+            // If punisherName is undefined (not found), punish all players
+            if (!punisherName || player.name !== punisherName) {
+                if (typeof player.getPunish === "function") {
+                    player.getPunish(linesToPunish);
+                }
+            }
+        });
     }
 
     // start the countdown, providing io + room so we can emit updates

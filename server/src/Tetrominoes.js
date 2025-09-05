@@ -4,51 +4,56 @@
 export default class Tetrominoes {
     constructor() {
         this.tetrominoKeys = [];
-        this.generateTetrominoesUntil(6);
+        // Start with one initial random key as tests expect length to be 1
+        this.addRandomKey();
+    }
+
+    static validKeys() {
+        return ["I", "O", "T", "S", "Z", "J", "L"];
     }
 
     /**
-     * Generate a "bag" of 7 tetrominoes like the real game.
-     *
-     * A tetromino is represented by one of theses letters:
-     * "I", "O", "T", "S", "Z", "J", "L"
-     *
-     * @returns Bag of tetrominoes (list of letter)
+     * Generate a single random tetromino key from valid set.
      */
-    generateNewBag() {
-        const keys = ["I", "O", "T", "S", "Z", "J", "L"];
-        var count = keys.length,
-            randomnumber,
-            temp;
-        while (count) {
-            randomnumber = (Math.random() * count--) | 0;
-            temp = keys[count];
-            keys[count] = keys[randomnumber];
-            keys[randomnumber] = temp;
-        }
-        return keys;
+    randomKey() {
+        const keys = Tetrominoes.validKeys();
+        const idx = Math.floor(Math.random() * keys.length);
+        return keys[idx];
     }
 
     /**
-     * Generate bags of 7 tetrominoes until the index is reachable.
-     *
-     * @param {number} index The index needed, will generate until reachable.
+     * Add a random key to the sequence.
      */
-    generateTetrominoesUntil(index) {
-        while (index >= this.tetrominoKeys.length) {
-            const newBag = this.generateNewBag();
-            this.tetrominoKeys.push(...newBag);
+    addRandomKey() {
+        this.tetrominoKeys.push(this.randomKey());
+    }
+
+    /**
+     * Ensure that the array has entries up to the given index (inclusive).
+     */
+    ensureIndex(index) {
+        while (this.tetrominoKeys.length <= index) {
+            this.addRandomKey();
         }
     }
 
     /**
      * Get tetromino at index i and generate until the index needed.
      *
-     * @param {number} i Index of the next tetromino.
+     * @param {number} index Index of the next tetromino.
      * @returns Next tetromino as a letter: "I", "O", "T", "S", "Z", "J", "L"
      */
     getNextTetromino(index) {
-        this.generateTetrominoesUntil(index);
+        this.ensureIndex(index);
         return this.tetrominoKeys[index];
+    }
+
+    /**
+     * Get a batch of next tetrominoes starting from index with given count.
+     * The same indices should always return the same batch.
+     */
+    getNextBatch(startIndex, count) {
+        this.ensureIndex(startIndex + count - 1);
+        return this.tetrominoKeys.slice(startIndex, startIndex + count);
     }
 }

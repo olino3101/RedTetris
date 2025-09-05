@@ -36,6 +36,11 @@ export default class SocketCommunication {
     onConnection = (socket) => {
         console.log("[socket] connected:", socket.id);
 
+        // Emit a welcome message to newly connected clients
+        if (typeof socket.emit === "function") {
+            socket.emit("welcome", { message: "Welcome to RedTetris server" });
+        }
+
         socket.on("joinRoom", (data) => this.onJoinRoom(socket, data));
         socket.on("startCountdown", (data, ack) =>
             this.onStartCountdown(socket, data, ack)

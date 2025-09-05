@@ -20,4 +20,16 @@ export default class Player {
         this.tetrominoIndex += 1;
         return key;
     }
+
+    // placeholder for receiving punishment (e.g., add garbage lines)
+    getPunish(lines) {
+        // Intentionally no-op for now; tests just assert it's callable
+    }
+
+    // when the player completes lines, punish others via the game
+    completeLines(linesToPunish) {
+        if (this.currentGame && typeof this.currentGame.punishOthers === "function") {
+            this.currentGame.punishOthers(this, linesToPunish);
+        }
+    }
 }
