@@ -1,4 +1,5 @@
 import "./GameController.css";
+import { useEffect, useCallback } from "react";
 
 import { Action, actionForKey, actionIsDrop } from "/src/utils/Input";
 import { playerController, isGoingToCollided } from "/src/utils/PlayerController";
@@ -20,27 +21,7 @@ const GameController = ({
         gameStats,
     });
 
-
-
-    const onKeyUp = ({ code }) => {
-        const action = actionForKey(code);
-        if (actionIsDrop(action)) resumeDropTime();
-    };
-
-    const onKeyDown = ({ code }) => {
-        const action = actionForKey(code);
-
-        if (action == Action.Quit) {
-            setGameOver(true);
-            socket.emit("gameLost", { room });
-            socket.emit("joinRoom", { room, name });
-        } else {
-            if (actionIsDrop(action)) pauseDropTime();
-            handleInput({ action });
-        }
-    };
-
-    const handleInput = ({ action }) => {
+    const handleInput = useCallback(({ action }) => {
         playerController({
             action,
             board,
@@ -51,7 +32,37 @@ const GameController = ({
             name,
             socket
         });
-    };
+    }, [board, player, setPlayer, setGameOver, room, name, socket]);
+
+    const onKeyUp = useCallback(({ code }) => {
+        const action = actionForKey(code);
+        if (actionIsDrop(action)) resumeDropTime();
+    }, [resumeDropTime]);
+
+    const onKeyDown = useCallback(({ code }) => {
+        const action = actionForKey(code);
+
+        if (action == Action.Quit) {
+            setGameOver(true);
+            socket.emit("gameLost", { room });
+            socket.emit("joinRoom", { room, name });
+        } else {
+            if (actionIsDrop(action)) pauseDropTime();
+            handleInput({ action });
+        }
+    }, [pauseDropTime, setGameOver, socket, room, name, handleInput]);
+
+    // Add global event listeners for keyboard events
+    useEffect(() => {
+        document.addEventListener("keydown", onKeyDown);
+        document.addEventListener("keyup", onKeyUp);
+
+        // Cleanup event listeners on component unmount
+        return () => {
+            document.removeEventListener("keydown", onKeyDown);
+            document.removeEventListener("keyup", onKeyUp);
+        };
+    }, [onKeyDown, onKeyUp]);
 
     // Clamp interval to avoid too-fast rerenders
     const baseDrop = dropTime ?? 400;
@@ -63,13 +74,9 @@ const GameController = ({
     }, clamped);
 
     return (
-        <input
-            className="GameController"
-            type="text"
-            onKeyDown={onKeyDown}
-            onKeyUp={onKeyUp}
-            autoFocus
-        />
+        <div className="GameController">
+            {/* Hidden div - keyboard events are now handled globally */}
+        </div>
     );
 };
 

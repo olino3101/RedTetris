@@ -8,6 +8,10 @@ dev:
 
 prod:
 	docker compose -f docker-compose.prod.yml up --build
+	@echo ""
+	@echo "🚀 RedTetris is running!"
+	@echo "🌐 Access your game at: http://$(DOMAIN_NAME):$(HTTPS_PORT)"
+	@echo "🔍 Health check: http://$(DOMAIN_NAME):$(HTTPS_PORT)/api/health"
 
 caddy-fmt:
 	docker run --rm -v "./caddy:/etc/caddy" caddy:2.7-alpine sh -c 'caddy fmt -w /etc/caddy/Caddyfile.dev && caddy fmt -w /etc/caddy/Caddyfile.prod'

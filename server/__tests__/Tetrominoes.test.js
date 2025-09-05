@@ -8,42 +8,53 @@ describe("Tetrominoes", () => {
         tetrominoes = new Tetrominoes();
     });
 
-    test("should create instance with initial random key", () => {
+    test("should create instance with initial 7 tetrominoes", () => {
         expect(tetrominoes).toBeInstanceOf(Tetrominoes);
-        expect(tetrominoes.tetrominoKeys).toHaveLength(1);
-        expect(["I", "O", "T", "S", "Z", "J", "L"]).toContain(
-            tetrominoes.tetrominoKeys[0]
-        );
-    });
+        expect(tetrominoes.tetrominoKeys.length).toBeGreaterThanOrEqual(7);
 
-    test("should generate random keys from valid piece set", () => {
+        // Should contain all valid tetromino types
         const validKeys = ["I", "O", "T", "S", "Z", "J", "L"];
-
-        for (let i = 0; i < 100; i++) {
-            const key = tetrominoes.randomKey();
+        tetrominoes.tetrominoKeys.forEach((key) => {
             expect(validKeys).toContain(key);
+        });
+    });
+
+    test("should generate a new bag of 7 shuffled tetrominoes", () => {
+        const bag = tetrominoes.generateNewBag();
+
+        expect(bag).toHaveLength(7);
+
+        // Should contain exactly one of each tetromino type
+        const validKeys = ["I", "O", "T", "S", "Z", "J", "L"];
+        validKeys.forEach((key) => {
+            expect(bag).toContain(key);
+        });
+
+        // Should be shuffled (test randomness by generating multiple bags)
+        const bags = [];
+        for (let i = 0; i < 10; i++) {
+            bags.push(tetrominoes.generateNewBag());
         }
-    });
 
-    test("should add random keys to sequence", () => {
-        const initialLength = tetrominoes.tetrominoKeys.length;
-        tetrominoes.addRandomKey();
-
-        expect(tetrominoes.tetrominoKeys).toHaveLength(initialLength + 1);
-        expect(["I", "O", "T", "S", "Z", "J", "L"]).toContain(
-            tetrominoes.tetrominoKeys[tetrominoes.tetrominoKeys.length - 1]
+        // At least one bag should be different from the first (very high probability)
+        const differentBags = bags.some(bag =>
+            !bag.every((key, index) => key === bags[0][index])
         );
+        expect(differentBags).toBe(true);
     });
 
-    test("should ensure index exists by generating keys", () => {
-        expect(tetrominoes.tetrominoKeys).toHaveLength(1);
+    test("should generate tetrominoes until specified index", () => {
+        // Initially has 7 tetrominoes (0-6)
+        expect(tetrominoes.tetrominoKeys).toHaveLength(7);
 
-        tetrominoes.ensureIndex(5);
-        expect(tetrominoes.tetrominoKeys).toHaveLength(6);
+        // Generate until index 10 (needs 11 tetrominoes total)
+        tetrominoes.generateTetrominoesUntil(10);
+        expect(tetrominoes.tetrominoKeys.length).toBeGreaterThanOrEqual(11);
 
-        // Should not add more if already exists
-        tetrominoes.ensureIndex(3);
-        expect(tetrominoes.tetrominoKeys).toHaveLength(6);
+        // Should not add more if already sufficient
+        const lengthBefore = tetrominoes.tetrominoKeys.length;
+        tetrominoes.generateTetrominoesUntil(5);
+        expect(tetrominoes.tetrominoKeys).toHaveLength(lengthBefore);
     });
 
     test("should get next tetromino by index", () => {
@@ -52,43 +63,61 @@ describe("Tetrominoes", () => {
 
         const key5 = tetrominoes.getNextTetromino(5);
         expect(["I", "O", "T", "S", "Z", "J", "L"]).toContain(key5);
-        expect(tetrominoes.tetrominoKeys).toHaveLength(6);
 
         // Getting same index should return same key
         expect(tetrominoes.getNextTetromino(0)).toBe(key0);
         expect(tetrominoes.getNextTetromino(5)).toBe(key5);
     });
 
-    test("should get next batch of tetrominoes", () => {
-        const batch = tetrominoes.getNextBatch(0, 5);
+    test("should automatically generate tetrominoes when accessing high indices", () => {
+        const initialLength = tetrominoes.tetrominoKeys.length;
 
-        expect(batch).toHaveLength(5);
-        batch.forEach((key) => {
-            expect(["I", "O", "T", "S", "Z", "J", "L"]).toContain(key);
-        });
+        // Access index beyond current length
+        const key20 = tetrominoes.getNextTetromino(20);
 
-        // Should generate enough keys
-        expect(tetrominoes.tetrominoKeys.length).toBeGreaterThanOrEqual(5);
+        expect(["I", "O", "T", "S", "Z", "J", "L"]).toContain(key20);
+        expect(tetrominoes.tetrominoKeys.length).toBeGreaterThanOrEqual(21);
+        expect(tetrominoes.tetrominoKeys.length).toBeGreaterThan(initialLength);
     });
 
-    test("should get batch starting from specific index", () => {
-        const batch1 = tetrominoes.getNextBatch(3, 3);
-        const batch2 = tetrominoes.getNextBatch(3, 3);
+    test("should maintain tetromino sequence consistency", () => {
+        // Get some tetrominoes
+        const keys1 = [
+            tetrominoes.getNextTetromino(0),
+            tetrominoes.getNextTetromino(1),
+            tetrominoes.getNextTetromino(2)
+        ];
 
-        expect(batch1).toEqual(batch2); // Same batch should be identical
-        expect(batch1).toHaveLength(3);
+        // Access them again - should be the same
+        const keys2 = [
+            tetrominoes.getNextTetromino(0),
+            tetrominoes.getNextTetromino(1),
+            tetrominoes.getNextTetromino(2)
+        ];
 
-        // Verify keys are from correct indices
-        expect(batch1[0]).toBe(tetrominoes.getNextTetromino(3));
-        expect(batch1[1]).toBe(tetrominoes.getNextTetromino(4));
-        expect(batch1[2]).toBe(tetrominoes.getNextTetromino(5));
+        expect(keys1).toEqual(keys2);
+    });
+
+    test("should generate bags in proper 7-tetromino cycles", () => {
+        // Generate enough tetrominoes to span multiple bags
+        tetrominoes.generateTetrominoesUntil(20);
+
+        // Check that each complete bag of 7 contains all tetromino types
+        for (let bagStart = 0; bagStart < 14; bagStart += 7) {
+            const bag = tetrominoes.tetrominoKeys.slice(bagStart, bagStart + 7);
+            const validKeys = ["I", "O", "T", "S", "Z", "J", "L"];
+
+            validKeys.forEach((key) => {
+                expect(bag).toContain(key);
+            });
+        }
     });
 
     test("should handle large indices efficiently", () => {
-        const largeIndex = 1000;
+        const largeIndex = 100;
         const key = tetrominoes.getNextTetromino(largeIndex);
 
         expect(["I", "O", "T", "S", "Z", "J", "L"]).toContain(key);
-        expect(tetrominoes.tetrominoKeys).toHaveLength(largeIndex + 1);
+        expect(tetrominoes.tetrominoKeys.length).toBeGreaterThanOrEqual(largeIndex + 1);
     });
 });

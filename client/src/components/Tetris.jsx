@@ -38,8 +38,12 @@ const Tetris = ({ rows, columns, socket, room, name, setGameOver }) => {
     }) && player.position.row === 0) {
       setGameOver(true);
       console.log("Game Over detected in Tetris component");
+      try {
+        socket.emit("gameLost", { room });
+        socket.emit("joinRoom", { room, name });
+      } catch (_) { }
     }
-  }, [board, player, setGameOver]);
+  }, [board, player, setGameOver, socket, room, name]);
 
   // Only send when board actually changes to avoid flooding
   useEffect(() => {
