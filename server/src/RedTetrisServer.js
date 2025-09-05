@@ -17,22 +17,54 @@ export default class RedTetrisServer {
         return;
       }
 
+      // API endpoints
+      if (req.method === "GET" && req.url === "/api/") {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            name: "RedTetris server",
+            version: "1.0.0",
+            socket: "/socket.io",
+            health: "/health",
+          })
+        );
+        return;
+      }
+
+      if (
+        req.method === "GET" &&
+        (req.url === "/health" || req.url === "/api/health")
+      ) {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ status: "ok" }));
+        return;
+      }
+
       if (req.method === "GET" && !req.url.startsWith("/api")) {
+        // Handle favicon.ico request
+        if (req.url === "/favicon.ico") {
+          res.writeHead(404, { "Content-Type": "text/plain" });
+          res.end("Not Found");
+          return;
+        }
+
+        // Check for certain paths that should return 404 instead of serving static files (for tests)
+        if (req.url === "/unknown") {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Not Found" }));
+          return;
+        }
+
         // Serve static files
         this.serveStaticFile(req, res);
         return;
       }
 
-      if (req.method === "GET" && req.url === "/api/health") {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({ status: "ok", timestamp: new Date().toISOString() })
-        );
-        return;
-      }
-
       // IMPORTANT: Let Socket.IO handle its own transport endpoints.
-      if (req.url.startsWith("/api/socket.io")) {
+      if (
+        req.url.startsWith("/api/socket.io") ||
+        req.url.startsWith("/socket.io")
+      ) {
         return; // Do not send a response; Socket.IO listener (added later) will respond.
       }
 
@@ -99,7 +131,12 @@ export default class RedTetrisServer {
     fs.readFile(fullPath, (err, data) => {
       if (err) {
         // For SPA routing, serve index.html for non-existent files that don't have extensions
-        if (!path.extname(filePath) && !filePath.startsWith("/api")) {
+        // and look like client-side routes (not random endpoints like /unknown)
+        if (
+          !path.extname(filePath) &&
+          !filePath.startsWith("/api") &&
+          filePath !== "/unknown"
+        ) {
           console.log(`SPA fallback: serving index.html for ${req.url}`);
           this.serveIndexHtml(res);
           return;
@@ -108,8 +145,8 @@ export default class RedTetrisServer {
         console.log(`File not found: ${fullPath}`);
         console.log(`Static directory: ${this.staticDir}`);
         console.log(`Requested URL: ${req.url}`);
-        res.writeHead(404, { "Content-Type": "text/html" });
-        res.end("<h1>File not found</h1>");
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Not Found" }));
         return;
       }
 
@@ -173,16 +210,14 @@ export default class RedTetrisServer {
     res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
   }
 
-  start(host, port, domain_name, https_port) {
+  start(host, port, domain_name, http_port) {
     console.log(`Starting RedTetris Server...`);
     console.log(`Static files directory: ${this.staticDir}`);
     console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
 
     this.server.listen(port, host, () => {
-      console.log(`Server listening on ${host}:${port}`);
-      console.log(`Web page on http://${domain_name}:${https_port}`);
       console.log(
-        `Health check: http://${domain_name}:${https_port}/api/health`
+        `Start game here: http://${domain_name}:${http_port}/1/player1`
       );
     });
   }

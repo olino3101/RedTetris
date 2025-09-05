@@ -18,4 +18,4 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 
 # Simple script to ensure files are available and exit successfully
-CMD ["sh", "-c", "echo 'Client build completed. Files available in /app/dist'; ls -la /app/dist/; sleep 5"]
+CMD ["sh", "-c", "echo 'Client build completed. Files available in /app/dist'; ls -la /app/dist/; sleep 1"]

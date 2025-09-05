@@ -3,7 +3,7 @@ services:
     container_name: redtetris-client-prod
     build:
       context: ./client
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     volumes:
       - redtetris-dist:/app/dist
     networks:
@@ -15,7 +15,7 @@ services:
     container_name: redtetris-server-prod
     build:
       context: ./server
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     depends_on:
       client:
         condition: service_completed_successfully

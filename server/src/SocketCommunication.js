@@ -85,14 +85,20 @@ export default class SocketCommunication {
     if (!game.hasPlayerSocketId(socket.id)) {
       console.log("Someone is joining a room with data:", data);
 
-      // check if name is already taken
-      const isNameTaken = game.players.some((p) => p.name === data.name);
-      if (isNameTaken) {
-        socket.emit("nameTaken", {
-          message: "This name is already taken. Please choose another one.",
-        });
-        return;
+      // Check if name is already taken by a different socket
+      const existingPlayerWithName = game.players.find(
+        (p) => p.name === data.name
+      );
+      if (existingPlayerWithName) {
+        // If it's a different socket ID, this could be a reconnection scenario
+        // Remove the old player entry to allow reconnection
+        console.log(
+          "Removing stale player entry for reconnection:",
+          existingPlayerWithName.socketId
+        );
+        game.removePlayerSocketId(existingPlayerWithName.socketId);
       }
+
       game.addPlayer(socket.id, data.name, isHost);
       // Broadcast updated player list (names only)
       this.io.to(data.room).emit("playersUpdate", {
@@ -208,16 +214,33 @@ export default class SocketCommunication {
    */
   onDisconnect = (socket, reason) => {
     const { game, player } = getPlayerInGamesMap(this.gameMap, socket.id);
-    if (game && player && player.isHost) {
-      game.setNewHostInGame(player);
-      game.removePlayerSocketId(socket.id);
-    }
-    if (game && game.players.length <= 0) {
-      if (game.started) {
-        this.io.to(game.room).emit("endOfGame");
+    if (game && player) {
+      // If the disconnecting player was host, set a new host
+      if (player.isHost) {
+        game.setNewHostInGame(player);
       }
-      console.log("Deleting game:", game.room);
-      this.gameMap.delete(game.room);
+
+      // Always remove the player when they disconnect
+      game.removePlayerSocketId(socket.id);
+
+      // Broadcast updated player list to remaining players
+      if (game.players.length > 0) {
+        this.io.to(game.room).emit("playersUpdate", {
+          players: game.players.map((p) => p.name),
+        });
+      }
+
+      // If everyone but one player has disconnected, end the game
+      if (game.players.length <= 1 && game.started) {
+        this.io.to(game.room).emit("endOfGame");
+        console.log("Deleting game:", game.room);
+        this.gameMap.delete(game.room);
+      }
+      // Delete game if no players left
+      if (game.players.length <= 0) {
+        console.log("Deleting game:", game.room);
+        this.gameMap.delete(game.room);
+      }
     }
     console.log("[socket] disconnected:", socket.id, reason);
   };
