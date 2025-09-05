@@ -78,8 +78,17 @@ export default class SocketCommunication {
         }
         if (!game.hasPlayerSocketId(socket.id)) {
             console.log("Someone is joining a room with data:", data);
+
+            // check if name is already taken
+            const isNameTaken = game.players.some((p) => p.name === data.name);
+            if (isNameTaken) {
+                socket.emit("nameTaken", {
+                    message: "This name is already taken. Please choose another one.",
+                });
+                return;
+            }
             game.addPlayer(socket.id, data.name, isHost);
-            // Broadcast updated player list (names only)
+            // Broadcast updated player list (names only) 
             this.io.to(data.room).emit("playersUpdate", {
                 players: game.players.map((p) => p.name),
             });
